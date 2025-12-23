@@ -5,11 +5,18 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
-// Читаем токены из local.properties (безопасность)
+// Читаем токены из local.properties (безопасность) или environment variables (CI/CD)
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
     localProperties.load(localPropertiesFile.inputStream())
+}
+
+// Функция для получения значения из local.properties или environment
+fun getConfigValue(key: String, default: String = ""): String {
+    return localProperties.getProperty(key) 
+        ?: System.getenv(key) 
+        ?: default
 }
 
 android {
@@ -23,9 +30,9 @@ android {
         versionCode = 1
         versionName = "1.0"
         
-        // Crash reporting credentials (читаем из local.properties или используем пустые значения)
-        buildConfigField("String", "CRASH_BOT_TOKEN", "\"${localProperties.getProperty("CRASH_BOT_TOKEN", "")}\"")
-        buildConfigField("String", "CRASH_CHAT_ID", "\"${localProperties.getProperty("CRASH_CHAT_ID", "")}\"")
+        // Crash reporting credentials (читаем из local.properties или environment)
+        buildConfigField("String", "CRASH_BOT_TOKEN", "\"${getConfigValue("CRASH_BOT_TOKEN")}\"")
+        buildConfigField("String", "CRASH_CHAT_ID", "\"${getConfigValue("CRASH_CHAT_ID")}\"")
     }
 
     buildTypes {

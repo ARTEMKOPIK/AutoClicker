@@ -27,9 +27,15 @@ jobs:
       run: gradle wrapper
 
     - name: Build Debug APK
+      env:
+        CRASH_BOT_TOKEN: ${{ secrets.CRASH_BOT_TOKEN }}
+        CRASH_CHAT_ID: ${{ secrets.CRASH_CHAT_ID }}
       run: ./gradlew assembleDebug
 
     - name: Build Release APK
+      env:
+        CRASH_BOT_TOKEN: ${{ secrets.CRASH_BOT_TOKEN }}
+        CRASH_CHAT_ID: ${{ secrets.CRASH_CHAT_ID }}
       run: ./gradlew assembleRelease
 
     - name: Upload Debug APK
