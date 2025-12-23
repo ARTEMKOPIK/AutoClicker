@@ -299,10 +299,13 @@ class MacroRecorderService : Service() {
         isRecording = false
         handler.removeCallbacksAndMessages(null) // Очищаем все callbacks
         try {
+            overlayView?.setOnTouchListener(null)
             overlayView?.let { windowManager.removeView(it) }
             controlView?.let { windowManager.removeView(it) }
         } catch (e: Exception) {
             // Views already removed
         }
+        overlayView = null
+        controlView = null
     }
 }

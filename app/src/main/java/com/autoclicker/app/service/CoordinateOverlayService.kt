@@ -165,5 +165,6 @@ class CoordinateOverlayService : Service() {
         }
         overlayView = null
         coordinateView = null
+        coordinateParams = null
     }
 }

@@ -83,6 +83,12 @@ class ColorPickerService : Service() {
             }
         }
     }
+    
+    // Ключи для сохранения истории
+    private companion object {
+        private const val PREFS_COLOR_HISTORY = "color_picker_history"
+        private const val KEY_HISTORY = "history"
+    }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -91,7 +97,39 @@ class ColorPickerService : Service() {
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
         initVibrator()
+        loadColorHistory()
         setupFloatingPicker()
+    }
+    
+    private fun loadColorHistory() {
+        try {
+            val prefs = getSharedPreferences(PREFS_COLOR_HISTORY, Context.MODE_PRIVATE)
+            val historyJson = prefs.getString(KEY_HISTORY, null) ?: return
+            val entries = historyJson.split(";").mapNotNull { entry ->
+                val parts = entry.split(",")
+                if (parts.size == 3) {
+                    try {
+                        ColorEntry(parts[0].toInt(), parts[1].toInt(), parts[2].toInt())
+                    } catch (e: NumberFormatException) {
+                        null
+                    }
+                } else null
+            }
+            colorHistory.clear()
+            colorHistory.addAll(entries.take(MAX_HISTORY))
+        } catch (e: Exception) {
+            android.util.Log.e("ColorPickerService", "Error loading color history", e)
+        }
+    }
+    
+    private fun saveColorHistory() {
+        try {
+            val prefs = getSharedPreferences(PREFS_COLOR_HISTORY, Context.MODE_PRIVATE)
+            val historyJson = colorHistory.joinToString(";") { "${it.color},${it.x},${it.y}" }
+            prefs.edit().putString(KEY_HISTORY, historyJson).apply()
+        } catch (e: Exception) {
+            android.util.Log.e("ColorPickerService", "Error saving color history", e)
+        }
     }
 
     private fun initVibrator() {
@@ -361,6 +399,7 @@ class ColorPickerService : Service() {
         }
         
         updateHistoryUI()
+        saveColorHistory()
     }
 
     private fun updateHistoryUI() {
@@ -459,16 +498,21 @@ class ColorPickerService : Service() {
         hideCrosshair()
         
         // Сохраняем позицию пипетки
-        try {
-            val prefs = PrefsManager(this)
-            prefs.pickerX = params.x
-            prefs.pickerY = params.y
-        } catch (e: Exception) {
-            // Игнорируем
+        if (::params.isInitialized) {
+            try {
+                val prefs = PrefsManager(this)
+                prefs.pickerX = params.x
+                prefs.pickerY = params.y
+            } catch (e: Exception) {
+                // Игнорируем ошибки при сохранении
+                android.util.Log.e("ColorPickerService", "Error saving picker position", e)
+            }
         }
         
         try {
-            windowManager.removeView(pickerView)
+            if (::pickerView.isInitialized) {
+                windowManager.removeView(pickerView)
+            }
         } catch (e: Exception) {
             // View already removed
         }

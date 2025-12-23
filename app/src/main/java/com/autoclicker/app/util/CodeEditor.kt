@@ -154,15 +154,19 @@ class CodeEditor @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         val currentLineHeight = lineHeight
-        if (currentLineHeight <= 0) {
+        val layout = layout
+        if (currentLineHeight <= 0 || layout == null || layout.lineCount == 0) {
             super.onDraw(canvas)
             return
         }
 
         // Подсветка текущей строки
-        val cursorLine = if (selectionStart >= 0) layout?.getLineForOffset(selectionStart) ?: 0 else 0
-        val lineTop = layout?.getLineTop(cursorLine) ?: 0
-        val lineBottom = layout?.getLineBottom(cursorLine) ?: 0
+        val textLength = text?.length ?: 0
+        val cursorLine = if (selectionStart in 0..textLength) {
+            layout.getLineForOffset(selectionStart).coerceIn(0, layout.lineCount - 1)
+        } else 0
+        val lineTop = layout.getLineTop(cursorLine)
+        val lineBottom = layout.getLineBottom(cursorLine)
         canvas.drawRect(
             scrollX.toFloat(),
             lineTop.toFloat(),

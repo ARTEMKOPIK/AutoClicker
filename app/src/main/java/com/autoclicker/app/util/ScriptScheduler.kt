@@ -347,8 +347,8 @@ class ScriptScheduler(private val context: Context) {
             
             // Validate execution time to prevent duplicate runs
             val now = System.currentTimeMillis()
-            if (executeTime > 0 && now - executeTime > 60000) {
-                Log.w("SchedulerReceiver", "Discarding stale scheduled execution for task $taskId")
+            if (executeTime > 0 && now - executeTime > 300000) { // 5 минут - более разумный порог для AlarmManager
+                Log.w("SchedulerReceiver", "Discarding stale scheduled execution for task $taskId (delay: ${now - executeTime}ms)")
                 return
             }
 
@@ -358,7 +358,7 @@ class ScriptScheduler(private val context: Context) {
                 Log.i("SchedulerReceiver", "Started scheduled script $scriptId for task $taskId")
             } else {
                 Log.e("SchedulerReceiver", "No script ID in intent")
-                CrashHandler.logError("SchedulerReceiver", "Scheduled task $taskId missing script ID")
+                CrashHandler.logError("SchedulerReceiver", "Scheduled task $taskId missing script ID", null)
                 return
             }
 

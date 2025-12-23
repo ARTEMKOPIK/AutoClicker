@@ -186,6 +186,7 @@ class ScreenCaptureService : Service() {
         } catch (e: Exception) {
             android.util.Log.e("ScreenCapture", "Error creating bitmap", e)
             resultBitmap?.recycle()
+            resultBitmap = null
             null
         } finally {
             image.close()
@@ -194,12 +195,17 @@ class ScreenCaptureService : Service() {
     }
 
     fun getPixelColor(x: Int, y: Int): Int {
+        if (x < 0 || y < 0) {
+            android.util.Log.w("ScreenCapture", "Negative coordinates: $x, $y")
+            return 0
+        }
+        
         val screenshot = takeScreenshot() ?: return 0
         return try {
             if (x in 0 until screenshot.width && y in 0 until screenshot.height) {
                 screenshot.getPixel(x, y)
             } else {
-                android.util.Log.w("ScreenCapture", "Coordinates out of bounds: $x, $y")
+                android.util.Log.w("ScreenCapture", "Coordinates out of bounds: $x, $y (screen: ${screenshot.width}x${screenshot.height})")
                 0
             }
         } catch (e: Exception) {

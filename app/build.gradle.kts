@@ -1,6 +1,15 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+}
+
+// Читаем токены из local.properties (безопасность)
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
 }
 
 android {
@@ -14,9 +23,9 @@ android {
         versionCode = 1
         versionName = "1.0"
         
-        // Crash reporting credentials (можно переопределить в local.properties)
-        buildConfigField("String", "CRASH_BOT_TOKEN", "\"7942602377:AAF15LXW-D1bLgp3CKvliik-F8EeEdBWAeQ\"")
-        buildConfigField("String", "CRASH_CHAT_ID", "\"1123842711\"")
+        // Crash reporting credentials (читаем из local.properties или используем пустые значения)
+        buildConfigField("String", "CRASH_BOT_TOKEN", "\"${localProperties.getProperty("CRASH_BOT_TOKEN", "")}\"")
+        buildConfigField("String", "CRASH_CHAT_ID", "\"${localProperties.getProperty("CRASH_CHAT_ID", "")}\"")
     }
 
     buildTypes {
@@ -52,7 +61,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     
     // ML Kit для OCR
-    implementation("com.google.mlkit:text-recognition:16.0.1")
+    implementation("com.google.mlkit:text-recognition:16.0.3")
     
     // Telegram Bot API
     implementation("com.squareup.okhttp3:okhttp:4.12.0")

@@ -12,13 +12,46 @@ class ScriptStorage(context: Context) {
     private val prefs = context.getSharedPreferences("scripts", Context.MODE_PRIVATE)
     private val gson = Gson()
     private val lock = Any()
+    
+    companion object {
+        private const val CURRENT_VERSION = 1
+        private const val KEY_SCRIPTS_LIST = "scripts_list"
+        private const val KEY_DATA_VERSION = "data_version"
+    }
 
     data class Script(
         val id: String = UUID.randomUUID().toString(),
         val name: String,
         val code: String,
-        val date: String = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(Date())
+        val date: String = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault()).format(Date()),
+        val version: Int = CURRENT_VERSION
     )
+    
+    init {
+        migrateDataIfNeeded()
+    }
+    
+    /**
+     * Migrate data to current version if needed.
+     */
+    private fun migrateDataIfNeeded() {
+        val storedVersion = prefs.getInt(KEY_DATA_VERSION, 0)
+        if (storedVersion < CURRENT_VERSION) {
+            synchronized(lock) {
+                try {
+                    // Для будущих миграций добавлять логику здесь
+                    // when (storedVersion) {
+                    //     0 -> migrateV0toV1()
+                    // }
+                    prefs.edit().putInt(KEY_DATA_VERSION, CURRENT_VERSION).apply()
+                    Log.i("ScriptStorage", "Data migrated from v$storedVersion to v$CURRENT_VERSION")
+                } catch (e: Exception) {
+                    Log.e("ScriptStorage", "Migration failed", e)
+                    CrashHandler.logError("ScriptStorage", "Ошибка миграции данных", e)
+                }
+            }
+        }
+    }
 
     fun saveScript(script: Script) {
         synchronized(lock) {

@@ -38,9 +38,13 @@ class LogsActivity : BaseActivity(), ScriptLogger.LogListener {
     }
 
     override fun onDestroy() {
-        if (isListenerRegistered) {
-            ScriptLogger.removeListener(this)
-            isListenerRegistered = false
+        try {
+            if (isListenerRegistered) {
+                ScriptLogger.removeListener(this)
+                isListenerRegistered = false
+            }
+        } catch (e: Exception) {
+            // Игнорируем ошибки при удалении слушателя
         }
         super.onDestroy()
     }

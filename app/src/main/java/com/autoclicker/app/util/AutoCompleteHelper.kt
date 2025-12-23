@@ -153,15 +153,22 @@ class AutoCompleteHelper(
             
             val screenWidth = context.resources.displayMetrics.widthPixels
             
+            // Динамический расчёт ширины popup
+            val popupWidth = (screenWidth * 0.6).toInt().coerceIn(200, 350)
             var popupX = cursorX + editText.paddingLeft
             val popupY = lineBottom - editText.scrollY + editText.paddingTop
             
-            val popupWidth = 250
+            // Проверяем выход за правый край экрана
             if (location[0] + popupX + popupWidth > screenWidth) {
                 popupX = screenWidth - location[0] - popupWidth - 16
             }
+            // Проверяем выход за левый край
+            if (location[0] + popupX < 0) {
+                popupX = -location[0] + 16
+            }
             
             if (editText.isAttachedToWindow && editText.windowToken != null) {
+                popupWindow?.width = popupWidth
                 popupWindow?.showAsDropDown(editText, popupX, popupY - editText.height)
             }
         } catch (e: Exception) {

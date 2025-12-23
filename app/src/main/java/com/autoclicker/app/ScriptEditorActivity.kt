@@ -597,8 +597,12 @@ log("Скрипт завершён")"""
 
     override fun onDestroy() {
         autoSaveHandler.removeCallbacksAndMessages(null) // Удаляем ВСЕ callbacks
-        syntaxHighlighter.detach()
-        autoCompleteHelper.dismiss()
+        if (::syntaxHighlighter.isInitialized) {
+            syntaxHighlighter.detach()
+        }
+        if (::autoCompleteHelper.isInitialized) {
+            autoCompleteHelper.dismiss()
+        }
         super.onDestroy()
     }
 }

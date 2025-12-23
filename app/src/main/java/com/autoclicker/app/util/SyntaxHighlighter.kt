@@ -36,16 +36,23 @@ class SyntaxHighlighter(private val editText: EditText) : TextWatcher {
         private val PATTERN_NUMBERS = Pattern.compile("\\b\\d+\\.?\\d*\\b")
         private val PATTERN_COMMENTS = Pattern.compile("//.*")
         
-        private const val HIGHLIGHT_DELAY_MS = 100L
+        private const val HIGHLIGHT_DELAY_MS = 150L
+        private const val MAX_TEXT_LENGTH_FOR_HIGHLIGHT = 15000
     }
 
     private var isHighlighting = false
     private val handler = Handler(Looper.getMainLooper())
+    private var lastHighlightedText: String? = null
     private val highlightRunnable = Runnable {
-        editText.text?.let { 
+        editText.text?.let { editable ->
+            val currentText = editable.toString()
+            // Пропускаем если текст не изменился
+            if (currentText == lastHighlightedText) return@Runnable
+            
             isHighlighting = true
             try {
-                highlight(it)
+                highlight(editable)
+                lastHighlightedText = currentText
             } catch (e: Exception) {
                 // Игнорируем ошибки при подсветке
             }
@@ -69,7 +76,7 @@ class SyntaxHighlighter(private val editText: EditText) : TextWatcher {
         if (editable.isEmpty()) return
         
         val text = editable.toString()
-        if (text.length > 10000) {
+        if (text.length > MAX_TEXT_LENGTH_FOR_HIGHLIGHT) {
             // Пропускаем подсветку для очень больших текстов
             return
         }

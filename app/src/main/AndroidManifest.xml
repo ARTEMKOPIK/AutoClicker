@@ -125,7 +125,7 @@
         <!-- Планировщик -->
         <receiver
             android:name=".util.ScriptScheduler$SchedulerReceiver"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.autoclicker.app.ACTION_RUN_SCHEDULED_SCRIPT" />
             </intent-filter>

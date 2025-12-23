@@ -58,9 +58,4 @@
     <color name="divider">#FFFFFF10</color>
     <color name="border">#FFFFFF15</color>
     <color name="border_focus">#8B5CF680</color>
-    
-    <!-- Legacy support -->
-    <color name="banner_background">#1A1A24</color>
-    <color name="banner_text">#10B981</color>
-    <color name="background_card_orange">#8B5CF6</color>
 </resources>

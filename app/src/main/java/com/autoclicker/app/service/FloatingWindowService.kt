@@ -432,32 +432,40 @@ class FloatingWindowService : Service() {
             if (!isRunning) return
             
             val stoppingScriptName = currentScriptName
+            
+            // Устанавливаем флаг EXIT в ScriptEngine ПЕРВЫМ
+            currentEngine?.EXIT = true
+            
             isRunning = false
             addLog("⏹️ Скрипт остановлен")
             
-            // Устанавливаем флаг EXIT в ScriptEngine
-            currentEngine?.EXIT = true
-            
-            // Сначала отменяем job, потом scope
+            // Сохраняем ссылки перед обнулением
             val job = scriptJob
             val scope = serviceScope
-            val engine = currentEngine
             
+            // Обнуляем ссылки
             scriptJob = null
             serviceScope = null
             currentEngine = null
             
+            // Отменяем job и scope
             job?.cancel()
             scope?.cancel()
             
             handler.post {
-                btnPlay.setImageResource(R.drawable.ic_play)
+                if (!isDestroyed) {
+                    btnPlay.setImageResource(R.drawable.ic_play)
+                }
             }
             updateNotification("Панель управления активна")
             
             // Мониторинг: проверяем что скрипт действительно остановился через 3 секунды
+            // Используем WeakReference чтобы не держать ссылку на job после уничтожения сервиса
+            val jobRef = java.lang.ref.WeakReference(job)
             handler.postDelayed({
-                if (job?.isActive == true || engine?.EXIT == false) {
+                if (isDestroyed) return@postDelayed
+                val weakJob = jobRef.get()
+                if (weakJob?.isActive == true) {
                     val message = "⚠️ Скрипт '$stoppingScriptName' не остановился после команды STOP"
                     addLog(message)
                     com.autoclicker.app.util.CrashHandler.logWarning(

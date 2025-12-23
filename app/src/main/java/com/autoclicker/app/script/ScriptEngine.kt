@@ -686,8 +686,9 @@ class ScriptEngine(
     private fun resolveVariables(text: String): String {
         var result = text
         for ((key, value) in variables) {
+            // Заменяем ${key} и $key на значение переменной
+            result = result.replace("\${$key}", value.toString())
             result = result.replace("\$$key", value.toString())
-            result = result.replace(key, value.toString())
         }
         return result
     }
@@ -728,12 +729,13 @@ class ScriptEngine(
     }
 
     fun tap(x: Float, y: Float, count: Int, delay: Long = 100L) {
+        if (EXIT || Thread.currentThread().isInterrupted) return
         val service = ClickerAccessibilityService.instance
         if (service == null) {
             log("⚠️ Accessibility Service недоступен")
             return
         }
-        repeat(count) { i ->
+        for (i in 0 until count) {
             if (EXIT || Thread.currentThread().isInterrupted) return
             service.click(x, y)
             if (i < count - 1) sleep(delay)
@@ -765,20 +767,24 @@ class ScriptEngine(
     }
 
     fun sendTelegram(text: String) {
+        if (EXIT || Thread.currentThread().isInterrupted) return
         telegram.sendMessage(text)
         log("TG: $text")
     }
 
     fun sendTelegramPhoto(text: String, bitmap: Bitmap) {
+        if (EXIT || Thread.currentThread().isInterrupted) return
         telegram.sendPhoto(text, bitmap)
         log("TG Photo sent")
     }
 
     fun screenshot(): Bitmap? {
+        if (EXIT || Thread.currentThread().isInterrupted) return null
         return ScreenCaptureService.instance?.takeScreenshot()
     }
 
     fun getColor(x: Int, y: Int): Int {
+        if (EXIT || Thread.currentThread().isInterrupted) return 0
         return ScreenCaptureService.instance?.getPixelColor(x, y) ?: 0
     }
 
@@ -789,6 +795,7 @@ class ScriptEngine(
     // ==================== НОВЫЕ ФУНКЦИИ ====================
 
     fun waitForColor(x: Int, y: Int, targetColor: Int, timeout: Long, tolerance: Int = 0): Boolean {
+        if (EXIT || Thread.currentThread().isInterrupted) return false
         log("WaitForColor: ($x,$y) = ${colorToHex(targetColor)}, timeout=${timeout}ms")
         val startTime = System.currentTimeMillis()
         while (!EXIT && !Thread.currentThread().isInterrupted) {
@@ -808,6 +815,7 @@ class ScriptEngine(
     }
 
     fun waitForText(x1: Int, y1: Int, x2: Int, y2: Int, targetText: String, timeout: Long): Boolean {
+        if (EXIT || Thread.currentThread().isInterrupted) return false
         log("WaitForText: '$targetText', timeout=${timeout}ms")
         val startTime = System.currentTimeMillis()
         while (!EXIT && !Thread.currentThread().isInterrupted) {
@@ -827,6 +835,7 @@ class ScriptEngine(
     }
 
     fun compareColor(x: Int, y: Int, targetColor: Int, tolerance: Int = 0): Boolean {
+        if (EXIT || Thread.currentThread().isInterrupted) return false
         val currentColor = getColor(x, y)
         val result = colorsMatch(currentColor, targetColor, tolerance)
         log("CompareColor: ($x,$y) ${colorToHex(currentColor)} ${if (result) "==" else "!="} ${colorToHex(targetColor)}")
@@ -849,6 +858,7 @@ class ScriptEngine(
     }
 
     fun performBack() {
+        if (EXIT || Thread.currentThread().isInterrupted) return
         val service = ClickerAccessibilityService.instance
         if (service == null) {
             log("⚠️ Accessibility Service недоступен")
@@ -859,6 +869,7 @@ class ScriptEngine(
     }
 
     fun performHome() {
+        if (EXIT || Thread.currentThread().isInterrupted) return
         val service = ClickerAccessibilityService.instance
         if (service == null) {
             log("⚠️ Accessibility Service недоступен")
@@ -869,6 +880,7 @@ class ScriptEngine(
     }
 
     fun performRecents() {
+        if (EXIT || Thread.currentThread().isInterrupted) return
         val service = ClickerAccessibilityService.instance
         if (service == null) {
             log("⚠️ Accessibility Service недоступен")
@@ -879,13 +891,14 @@ class ScriptEngine(
     }
 
     fun vibrate(duration: Long) {
+        if (EXIT || Thread.currentThread().isInterrupted) return
         try {
             val vibrator = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                val vm = context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as? android.os.VibratorManager
+                val vm = context.getSystemService(android.content.Context.VIBRATOR_MANAGER_SERVICE) as? android.os.VibratorManager
                 vm?.defaultVibrator
             } else {
                 @Suppress("DEPRECATION")
-                context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
+                context.getSystemService(android.content.Context.VIBRATOR_SERVICE) as? android.os.Vibrator
             }
 
             if (vibrator == null) {
@@ -906,6 +919,7 @@ class ScriptEngine(
     }
 
     fun showToast(text: String) {
+        if (EXIT || Thread.currentThread().isInterrupted) return
         android.os.Handler(android.os.Looper.getMainLooper()).post {
             android.widget.Toast.makeText(context, text, android.widget.Toast.LENGTH_SHORT).show()
         }
@@ -913,6 +927,7 @@ class ScriptEngine(
     }
 
     fun getText(x1: Int, y1: Int, x2: Int, y2: Int): String {
+        if (EXIT || Thread.currentThread().isInterrupted) return ""
         val screenshot = screenshot() ?: return ""
 
         var cropped: Bitmap? = null
@@ -959,8 +974,9 @@ class ScriptEngine(
     }
 
     fun pushToClipboard(text: String) {
+        if (EXIT || Thread.currentThread().isInterrupted) return
         android.os.Handler(android.os.Looper.getMainLooper()).post {
-            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
             val clip = android.content.ClipData.newPlainText("text", text)
             clipboard.setPrimaryClip(clip)
         }
