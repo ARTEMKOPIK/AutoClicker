@@ -86,6 +86,10 @@ class CodeEditor @JvmOverloads constructor(
 
     companion object {
         private const val MAX_UNDO_REDO_SIZE = 100
+        private const val LINE_NUMBER_PADDING = 16
+        private const val CONTENT_PADDING = 12
+        private val OPEN_BRACKETS = charArrayOf('(', '{', '[')
+        private val CLOSE_BRACKETS = charArrayOf(')', '}', ']')
     }
 
     init {
@@ -538,14 +542,4 @@ class CodeEditor @JvmOverloads constructor(
         text?.insert(start, textToInsert)
         setSelection(start + textToInsert.length)
     }
-
-    companion object {
-        private const val LINE_NUMBER_PADDING = 16
-        private const val CONTENT_PADDING = 12
-        private const val DEFAULT_MAX_UNDO_STACK = 50
-        private val OPEN_BRACKETS = charArrayOf('(', '{', '[')
-        private val CLOSE_BRACKETS = charArrayOf(')', '}', ']')
-    }
-
-    var maxUndoStack: Int = DEFAULT_MAX_UNDO_STACK
 }
