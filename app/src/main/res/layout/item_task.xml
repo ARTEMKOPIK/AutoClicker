@@ -20,7 +20,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tvTime"
+            android:id="@+id/tvTaskTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="12:00"
@@ -38,7 +38,7 @@
         android:layout_marginStart="16dp">
 
         <TextView
-            android:id="@+id/tvScript"
+            android:id="@+id/tvTaskName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Script Name"
@@ -47,15 +47,6 @@
             android:textStyle="bold"
             android:maxLines="1"
             android:ellipsize="end" />
-
-        <TextView
-            android:id="@+id/tvDays"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Пн, Вт, Ср"
-            android:textColor="@color/text_tertiary"
-            android:textSize="13sp"
-            android:layout_marginTop="2dp" />
     </LinearLayout>
 
     <!-- Toggle -->

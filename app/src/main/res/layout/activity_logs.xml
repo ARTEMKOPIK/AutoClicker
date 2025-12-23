@@ -35,6 +35,15 @@
             android:textStyle="bold"
             android:layout_marginStart="12dp" />
 
+        <TextView
+            android:id="@+id/tvLogCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 записей"
+            android:textColor="@color/text_tertiary"
+            android:textSize="12sp"
+            android:layout_marginEnd="12dp" />
+
         <ImageView
             android:id="@+id/btnClear"
             android:layout_width="44dp"
@@ -76,9 +85,21 @@
                 android:text="Все"
                 android:textColor="@color/text_on_primary"
                 android:textSize="13sp"
-                android:background="@drawable/bg_chip"
+                android:background="@drawable/chip_selected"
                 android:gravity="center"
                 android:paddingHorizontal="16dp" />
+
+            <TextView
+                android:id="@+id/chipDebug"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Debug"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                android:background="@drawable/chip_normal"
+                android:gravity="center"
+                android:paddingHorizontal="16dp"
+                android:layout_marginStart="8dp" />
 
             <TextView
                 android:id="@+id/chipInfo"
@@ -87,19 +108,19 @@
                 android:text="Info"
                 android:textColor="@color/text_secondary"
                 android:textSize="13sp"
-                android:background="@drawable/bg_chip"
+                android:background="@drawable/chip_normal"
                 android:gravity="center"
                 android:paddingHorizontal="16dp"
                 android:layout_marginStart="8dp" />
 
             <TextView
-                android:id="@+id/chipWarning"
+                android:id="@+id/chipWarn"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:text="Warning"
+                android:text="Warn"
                 android:textColor="@color/text_secondary"
                 android:textSize="13sp"
-                android:background="@drawable/bg_chip"
+                android:background="@drawable/chip_normal"
                 android:gravity="center"
                 android:paddingHorizontal="16dp"
                 android:layout_marginStart="8dp" />
@@ -111,7 +132,7 @@
                 android:text="Error"
                 android:textColor="@color/text_secondary"
                 android:textSize="13sp"
-                android:background="@drawable/bg_chip"
+                android:background="@drawable/chip_normal"
                 android:gravity="center"
                 android:paddingHorizontal="16dp"
                 android:layout_marginStart="8dp" />
@@ -124,37 +145,22 @@
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+            android:id="@+id/rvLogs"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="16dp"
             android:clipToPadding="false" />
 
         <!-- Empty State -->
-        <LinearLayout
-            android:id="@+id/emptyState"
+        <TextView
+            android:id="@+id/tvEmpty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:src="@drawable/ic_logs"
-                android:alpha="0.3"
-                app:tint="@color/text_secondary" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Логи пусты"
-                android:textColor="@color/text_secondary"
-                android:textSize="16sp"
-                android:layout_marginTop="12dp" />
-        </LinearLayout>
+            android:text="Логи пусты"
+            android:textColor="@color/text_secondary"
+            android:textSize="16sp"
+            android:visibility="gone" />
     </FrameLayout>
 
 </LinearLayout>

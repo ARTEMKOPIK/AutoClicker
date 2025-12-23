@@ -61,8 +61,6 @@ class CodeEditor @JvmOverloads constructor(
     // Undo/Redo стек
     private val undoStack = LinkedList<TextChange>()
     private val redoStack = LinkedList<TextChange>()
-    /** Maximum number of undo/redo operations to keep in memory to prevent unbounded growth */
-    private const val MAX_UNDO_REDO_SIZE = 100
     private var isUndoRedo = false
 
     // Поиск

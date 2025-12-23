@@ -26,7 +26,6 @@ class AutoCompleteHelper(
     private var wordStart = 0
 
     private val suggestions = listOf(
-        // Основные действия
         Suggestion("click", "click(x, y)", "Клик по координатам"),
         Suggestion("longClick", "longClick(x, y)", "Долгий клик"),
         Suggestion("longClick", "longClick(x, y, duration)", "Долгий клик с длительностью"),
@@ -34,47 +33,27 @@ class AutoCompleteHelper(
         Suggestion("tap", "tap(x, y, count, delay)", "Множественный тап с задержкой"),
         Suggestion("swipe", "swipe(x1, y1, x2, y2)", "Свайп между точками"),
         Suggestion("swipe", "swipe(x1, y1, x2, y2, duration)", "Свайп с длительностью"),
-        
-        // Системные кнопки
         Suggestion("back", "back()", "Кнопка Назад"),
         Suggestion("home", "home()", "Кнопка Домой"),
         Suggestion("recents", "recents()", "Недавние приложения"),
-        
-        // Ожидание
         Suggestion("sleep", "sleep(ms)", "Задержка в миллисекундах"),
         Suggestion("waitForColor", "waitForColor(x, y, color, timeout)", "Ждать появления цвета"),
         Suggestion("waitForText", "waitForText(x1, y1, x2, y2, \"text\", timeout)", "Ждать появления текста"),
-        
-        // Получение данных
         Suggestion("getText", "getText(x1, y1, x2, y2)", "OCR распознавание текста"),
         Suggestion("getColor", "getColor(x, y)", "Получить цвет пикселя"),
         Suggestion("compareColor", "compareColor(x, y, color)", "Сравнить цвет"),
         Suggestion("compareColor", "compareColor(x, y, color, tolerance)", "Сравнить цвет с допуском"),
         Suggestion("random", "random(min, max)", "Случайное число"),
-        
-        // Вывод
         Suggestion("log", "log(\"text\")", "Вывод в лог"),
         Suggestion("toast", "toast(\"text\")", "Показать уведомление"),
         Suggestion("vibrate", "vibrate(ms)", "Вибрация"),
         Suggestion("sendTelegram", "sendTelegram(\"text\")", "Отправка в Telegram"),
         Suggestion("pushToCb", "pushToCb(\"text\")", "Копировать в буфер обмена"),
         Suggestion("screenshot", "screenshot()", "Сделать скриншот"),
-        
-        // Управление
         Suggestion("while", "while (!EXIT) {\n    \n}", "Цикл while"),
-        Suggestion("while", "while (true) {\n    \n}", "Бесконечный цикл"),
         Suggestion("if", "if (condition) {\n    \n}", "Условие if"),
-        Suggestion("if", "if (condition) {\n    \n} else {\n    \n}", "Условие if-else"),
         Suggestion("fun", "fun name() {\n    \n}", "Объявление функции"),
         Suggestion("EXIT", "EXIT = true", "Остановить скрипт"),
-        Suggestion("break", "break", "Выход из цикла"),
-        Suggestion("continue", "continue", "Следующая итерация"),
-        
-        // Переменные
-        Suggestion("val", "val name = value", "Объявление константы"),
-        Suggestion("var", "var name = value", "Объявление переменной"),
-        
-        // Глобальные переменные
         Suggestion("setVar", "setVar(\"key\", value)", "Сохранить глобальную переменную"),
         Suggestion("getVar", "getVar(\"key\")", "Получить глобальную переменную"),
         Suggestion("incVar", "incVar(\"key\")", "Увеличить переменную на 1"),
@@ -87,13 +66,9 @@ class AutoCompleteHelper(
         val description: String
     )
 
-    /**
-     * Показать подсказки для текущего слова
-     */
     fun showSuggestions(cursorPosition: Int) {
         val text = editText.text?.toString() ?: return
         
-        // Находим текущее слово
         wordStart = findWordStart(text, cursorPosition)
         currentWord = text.substring(wordStart, cursorPosition)
         
@@ -102,7 +77,6 @@ class AutoCompleteHelper(
             return
         }
 
-        // Фильтруем подсказки
         val filtered = suggestions.filter { 
             it.keyword.startsWith(currentWord, ignoreCase = true) && 
             it.keyword != currentWord 
@@ -136,8 +110,6 @@ class AutoCompleteHelper(
         val textLength = editText.text?.length ?: 0
         if (selectionStart < 0 || selectionStart > textLength) return
         if (layout.lineCount == 0) return
-        
-        // Проверяем что editText прикреплён к окну
         if (!editText.isAttachedToWindow) return
 
         val backgroundColor = ContextCompat.getColor(context, R.color.background_card)
@@ -165,7 +137,6 @@ class AutoCompleteHelper(
             elevation = 8f
         }
 
-        // Позиционируем под курсором с проверкой границ
         try {
             val lineCount = layout.lineCount
             if (lineCount == 0) {
@@ -177,55 +148,23 @@ class AutoCompleteHelper(
             val cursorX = layout.getPrimaryHorizontal(selectionStart).toInt()
             val lineBottom = layout.getLineBottom(line)
 
-            // Получаем позицию EditText на экране
             val location = IntArray(2)
             editText.getLocationOnScreen(location)
             
             val screenWidth = context.resources.displayMetrics.widthPixels
             
-            // Вычисляем позицию popup
             var popupX = cursorX + editText.paddingLeft
             val popupY = lineBottom - editText.scrollY + editText.paddingTop
             
-            // Корректируем если выходит за границы экрана
-            val popupWidth = 250 // примерная ширина popup
+            val popupWidth = 250
             if (location[0] + popupX + popupWidth > screenWidth) {
                 popupX = screenWidth - location[0] - popupWidth - 16
             }
             
-            // Проверяем что editText всё ещё прикреплён с обработкой race condition
-            try {
-                if (editText.isAttachedToWindow && editText.windowToken != null) {
-                    popupWindow?.showAsDropDown(editText, popupX, popupY - editText.height)
-                }
-            } catch (e: Exception) {
-                CrashHandler.logWarning("AutoCompleteHelper", "Error showing popup", e)
-                dismiss()
-            }
-            }
-
-            private fun insertSuggestion(suggestion: Suggestion) {
-            val text = editText.text ?: return
-            val cursorPos = editText.selectionStart
-
-            // Заменяем текущее слово на шаблон
-            text.replace(wordStart, cursorPos, suggestion.template)
-
-            // Позиционируем курсор внутри скобок если есть
-            // Добавляем проверку на -1, чтобы избежать ошибки при отсутствии скобки
-            val parenIndex = suggestion.template.indexOf('(')
-            if (parenIndex >= 0) {
-                val newCursorPos = wordStart + parenIndex + 1
-                editText.setSelection(newCursorPos)
-            }
-            }
-
-            fun dismiss() {
-            popupWindow?.dismiss()
-            popupWindow = null
+            if (editText.isAttachedToWindow && editText.windowToken != null) {
+                popupWindow?.showAsDropDown(editText, popupX, popupY - editText.height)
             }
         } catch (e: Exception) {
-            // Игнорируем ошибки показа popup
             dismiss()
         }
     }
@@ -234,11 +173,8 @@ class AutoCompleteHelper(
         val text = editText.text ?: return
         val cursorPos = editText.selectionStart
         
-        // Заменяем текущее слово на шаблон
         text.replace(wordStart, cursorPos, suggestion.template)
         
-        // Позиционируем курсор внутри скобок если есть
-        // Добавляем проверку на -1, чтобы избежать ошибки при отсутствии скобки
         val parenIndex = suggestion.template.indexOf('(')
         if (parenIndex >= 0) {
             val newCursorPos = wordStart + parenIndex + 1

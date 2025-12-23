@@ -9,6 +9,7 @@
 
     <!-- Header -->
     <LinearLayout
+        android:id="@+id/headerPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -32,7 +33,7 @@
             android:layout_marginStart="8dp" />
 
         <ImageButton
-            android:id="@+id/btnClose"
+            android:id="@+id/btnClosePicker"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:background="@drawable/bg_icon_button"
@@ -52,10 +53,18 @@
         android:padding="12dp">
 
         <View
-            android:id="@+id/colorPreview"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:id="@+id/colorPreviewLarge"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:background="@drawable/bg_card_gradient" />
+
+        <View
+            android:id="@+id/colorDot"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/circle_orange"
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -65,35 +74,34 @@
             android:layout_marginStart="12dp">
 
             <TextView
-                android:id="@+id/tvColorHex"
+                android:id="@+id/tvHexColor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="#8B5CF6"
+                android:text="#000000"
                 android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:fontFamily="monospace" />
 
             <TextView
-                android:id="@+id/tvColorRgb"
+                android:id="@+id/tvRgbColor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="RGB: 139, 92, 246"
+                android:text="RGB: 0, 0, 0"
                 android:textColor="@color/text_tertiary"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 android:fontFamily="monospace"
                 android:layout_marginTop="2dp" />
-        </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/btnCopy"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/bg_icon_button"
-            android:src="@drawable/ic_edit"
-            android:scaleType="centerInside"
-            android:padding="8dp"
-            app:tint="@color/text_secondary" />
+            <TextView
+                android:id="@+id/tvIntColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="INT: 0"
+                android:textColor="@color/text_tertiary"
+                android:textSize="11sp"
+                android:fontFamily="monospace" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Coordinates -->
@@ -110,12 +118,73 @@
 
     <!-- Hint -->
     <TextView
+        android:id="@+id/tvPickHint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Зажми и води по экрану"
+        android:text="Зажми кнопку и води по экрану"
         android:textColor="@color/text_tertiary"
         android:textSize="11sp"
         android:gravity="center"
         android:layout_marginTop="4dp" />
+
+    <!-- Pick Button -->
+    <Button
+        android:id="@+id/btnPickColor"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="🎯 Выбрать цвет"
+        android:textColor="@color/text_on_primary"
+        android:background="@drawable/bg_button_primary"
+        android:layout_marginTop="12dp" />
+
+    <!-- Copy Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <Button
+            android:id="@+id/btnCopyHex"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:text="HEX"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp"
+            android:background="@drawable/bg_button_secondary"
+            android:layout_marginEnd="4dp" />
+
+        <Button
+            android:id="@+id/btnCopyInt"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:text="INT"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp"
+            android:background="@drawable/bg_button_secondary"
+            android:layout_marginHorizontal="4dp" />
+
+        <Button
+            android:id="@+id/btnCopyCoords"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:text="XY"
+            android:textColor="@color/text_primary"
+            android:textSize="11sp"
+            android:background="@drawable/bg_button_secondary"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
+
+    <!-- History Container -->
+    <LinearLayout
+        android:id="@+id/historyContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:visibility="gone" />
 
 </LinearLayout>

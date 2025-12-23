@@ -11,19 +11,12 @@
     android:clickable="true"
     android:focusable="true">
 
-    <!-- Icon -->
-    <LinearLayout
-        android:layout_width="48dp"
+    <!-- Color Indicator -->
+    <View
+        android:id="@+id/colorIndicator"
+        android:layout_width="8dp"
         android:layout_height="48dp"
-        android:background="@drawable/bg_card_gradient"
-        android:gravity="center">
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_crosshair"
-            app:tint="@color/text_on_primary" />
-    </LinearLayout>
+        android:background="@color/primary" />
 
     <!-- Info -->
     <LinearLayout
@@ -53,11 +46,20 @@
             android:textSize="13sp"
             android:fontFamily="monospace"
             android:layout_marginTop="2dp" />
+
+        <TextView
+            android:id="@+id/tvType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Клик"
+            android:textColor="@color/primary"
+            android:textSize="12sp"
+            android:layout_marginTop="2dp" />
     </LinearLayout>
 
     <!-- Run Button -->
     <ImageView
-        android:id="@+id/btnRun"
+        android:id="@+id/btnPlay"
         android:layout_width="44dp"
         android:layout_height="44dp"
         android:padding="10dp"

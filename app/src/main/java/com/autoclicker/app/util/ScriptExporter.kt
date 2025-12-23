@@ -210,7 +210,7 @@ class ScriptExporter(private val context: Context) {
         // Safety check for compression result
         if (compressedSize == 0) {
             android.util.Log.w("ScriptExporter", "Compression resulted in zero bytes")
-            return null
+            return ""
         }
         
         val compressed = output.copyOf(compressedSize)
