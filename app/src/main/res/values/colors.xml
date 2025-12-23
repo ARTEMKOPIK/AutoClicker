@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 2025 Modern Dark Theme - Glassmorphism + Neon -->
+    
+    <!-- Primary Gradient Colors -->
+    <color name="primary">#8B5CF6</color>
+    <color name="primary_dark">#7C3AED</color>
+    <color name="primary_light">#A78BFA</color>
+    
+    <!-- Accent Colors -->
+    <color name="accent">#06B6D4</color>
+    <color name="accent_cyan">#22D3EE</color>
+    <color name="accent_pink">#EC4899</color>
+    <color name="accent_orange">#F97316</color>
+    <color name="accent_green">#10B981</color>
+    
+    <!-- Background Colors - OLED Friendly -->
+    <color name="background_dark">#0A0A0F</color>
+    <color name="background_surface">#12121A</color>
+    <color name="background_card">#1A1A24</color>
+    <color name="background_card_elevated">#22222E</color>
+    <color name="background_input">#16161F</color>
+    
+    <!-- Glass Effect -->
+    <color name="glass_bg">#1A1A1A80</color>
+    <color name="glass_border">#FFFFFF15</color>
+    <color name="glass_highlight">#FFFFFF08</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary">#F8FAFC</color>
+    <color name="text_secondary">#94A3B8</color>
+    <color name="text_tertiary">#64748B</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <color name="text_accent">#8B5CF6</color>
+    
+    <!-- Status Colors -->
+    <color name="success">#10B981</color>
+    <color name="success_bg">#10B98120</color>
+    <color name="error">#EF4444</color>
+    <color name="error_bg">#EF444420</color>
+    <color name="warning">#F59E0B</color>
+    <color name="warning_bg">#F59E0B20</color>
+    <color name="info">#3B82F6</color>
+    <color name="info_bg">#3B82F620</color>
+    
+    <!-- Gradient Colors -->
+    <color name="gradient_start">#8B5CF6</color>
+    <color name="gradient_end">#06B6D4</color>
+    <color name="gradient_pink_start">#EC4899</color>
+    <color name="gradient_pink_end">#8B5CF6</color>
+    
+    <!-- Glow Effects -->
+    <color name="glow_purple">#8B5CF640</color>
+    <color name="glow_cyan">#06B6D440</color>
+    <color name="glow_pink">#EC489940</color>
+    
+    <!-- Dividers & Borders -->
+    <color name="divider">#FFFFFF10</color>
+    <color name="border">#FFFFFF15</color>
+    <color name="border_focus">#8B5CF680</color>
+    
+    <!-- Legacy support -->
+    <color name="banner_background">#1A1A24</color>
+    <color name="banner_text">#10B981</color>
+    <color name="background_card_orange">#8B5CF6</color>
+</resources>

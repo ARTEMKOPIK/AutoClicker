@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AutoClicker</string>
+    <string name="accessibility_description">Позволяет автоматически нажимать на экран и распознавать текст для автоматизации действий</string>
+    
+    <!-- Permissions -->
+    <string name="permission_accessibility">Accessibility Service</string>
+    <string name="permission_overlay">Наложение поверх окон</string>
+    <string name="permission_capture">Захват экрана</string>
+    
+    <!-- Status -->
+    <string name="status_ready">✓ Всё готово к работе</string>
+    <string name="status_enabled">Включено</string>
+    <string name="status_disabled">Выключено</string>
+    <string name="status_active">Активен</string>
+    <string name="status_inactive">Не активен</string>
+    
+    <!-- Actions -->
+    <string name="action_save">Сохранить</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_test">Тест подключения</string>
+    <string name="action_start">Старт</string>
+    <string name="action_stop">Стоп</string>
+    <string name="action_search">Поиск</string>
+    <string name="action_sort">Сортировка</string>
+    <string name="action_add_script">Добавить скрипт</string>
+    <string name="action_discard">Отменить изменения</string>
+    <string name="action_menu">Меню</string>
+    
+    <!-- Messages -->
+    <string name="msg_saved">Сохранено</string>
+    <string name="msg_deleted">Удалено</string>
+    <string name="msg_no_scripts">Нет скриптов</string>
+    <string name="msg_no_scripts_hint">Нет скриптов\n\nНажмите + чтобы создать</string>
+    <string name="msg_script_empty">Скрипт пустой или не найден</string>
+    <string name="msg_capture_not_active">Захват экрана не активен!</string>
+    <string name="msg_accessibility_not_active">Accessibility не включён!</string>
+    <string name="msg_fill_all_fields">Заполните все поля</string>
+    <string name="msg_sending_test">Отправка тестового сообщения...</string>
+    <string name="msg_message_sent">Сообщение отправлено!</string>
+    <string name="msg_unsaved_changes">Есть несохранённые изменения</string>
+    <string name="msg_discard_changes">Отменить изменения?</string>
+    <string name="msg_no_results">Ничего не найдено</string>
+    <string name="msg_script_deleted">Скрипт удалён</string>
+    <string name="msg_undo">Отменить</string>
+    
+    <!-- Telegram -->
+    <string name="telegram_title">Telegram</string>
+    <string name="telegram_token_hint">123456789:ABCdefGHI...</string>
+    <string name="telegram_chat_id_hint">123456789 или -100123456789</string>
+    <string name="telegram_instructions">1. Создай бота у @BotFather\n2. Скопируй токен бота\n3. Узнай свой ID у @userinfobot\n4. Напиши боту /start</string>
+    
+    <!-- Script Editor -->
+    <string name="script_name_hint">Название скрипта</string>
+    <string name="script_code_hint">// Код скрипта</string>
+    <string name="script_not_selected">Скрипт не выбран</string>
+    
+    <!-- Scripts List -->
+    <string name="scripts_title">Мои скрипты</string>
+    <string name="search_hint">Поиск скриптов…</string>
+    <string name="sort_by_name">По имени</string>
+    <string name="sort_by_date">По дате</string>
+    <string name="sort_by_date_desc">По дате (новые)</string>
+    
+    <!-- Color Picker -->
+    <string name="color_picker_title">Color Picker</string>
+    <string name="color_picker_hint">Зажми и води\nпо экрану</string>
+    <string name="color_picker_picking">Выбираю...</string>
+    
+    <!-- Notifications -->
+    <string name="notification_capture_active">Захват экрана активен</string>
+    <string name="notification_panel_active">Панель управления активна</string>
+    
+    <!-- Widget -->
+    <string name="widget_description">Быстрый запуск скриптов AutoClicker</string>
+    
+    <!-- Macro Recorder -->
+    <string name="macro_recording">Запись макроса</string>
+    <string name="macro_recorded">Записано %d действий</string>
+    
+    <!-- Scheduler -->
+    <string name="scheduler_title">Расписание</string>
+    <string name="scheduler_add">Добавить задачу</string>
+    
+    <!-- Profiles -->
+    <string name="profiles_title">Профили</string>
+    <string name="profile_default">По умолчанию</string>
+    
+    <!-- Search -->
+    <string name="search_replace">Найти и заменить</string>
+    <string name="search_results" formatted="false">%d из %d</string>
+    <string name="replace_all">Заменить все</string>
+</resources>

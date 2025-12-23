@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_dark"
+    android:fitsSystemWindows="true">
+
+    <!-- Toolbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="12dp"
+        android:background="@color/background_surface">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:padding="10dp"
+            android:src="@drawable/ic_back"
+            android:background="@drawable/bg_icon_button"
+            app:tint="@color/text_primary" />
+
+        <EditText
+            android:id="@+id/etScriptName"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:hint="Название скрипта"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_tertiary"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:background="@null"
+            android:layout_marginHorizontal="8dp"
+            android:inputType="text"
+            android:maxLines="1"
+            android:gravity="center_vertical" />
+
+        <ImageView
+            android:id="@+id/btnUndo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_undo"
+            android:background="@drawable/bg_icon_button"
+            android:alpha="0.4"
+            app:tint="@color/text_secondary" />
+
+        <ImageView
+            android:id="@+id/btnRedo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_redo"
+            android:background="@drawable/bg_icon_button"
+            android:layout_marginStart="2dp"
+            android:alpha="0.4"
+            app:tint="@color/text_secondary" />
+
+        <ImageView
+            android:id="@+id/btnSearch"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_search"
+            android:background="@drawable/bg_icon_button"
+            android:layout_marginStart="2dp"
+            app:tint="@color/text_secondary" />
+
+        <ImageView
+            android:id="@+id/btnEditorMenu"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_menu"
+            android:background="@drawable/bg_icon_button"
+            android:layout_marginStart="2dp"
+            app:tint="@color/text_secondary" />
+    </LinearLayout>
+
+    <!-- Search Panel -->
+    <LinearLayout
+        android:id="@+id/searchPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/background_surface"
+        android:padding="12dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/etSearchQuery"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:hint="Найти..."
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_tertiary"
+                android:textSize="14sp"
+                android:background="@drawable/bg_input"
+                android:paddingHorizontal="14dp"
+                android:inputType="text"
+                android:imeOptions="actionSearch"
+                android:maxLines="1" />
+
+            <TextView
+                android:id="@+id/tvSearchResults"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0/0"
+                android:textColor="@color/text_tertiary"
+                android:textSize="12sp"
+                android:layout_marginHorizontal="8dp" />
+
+            <ImageView
+                android:id="@+id/btnSearchPrev"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_back"
+                android:background="@drawable/bg_icon_button"
+                android:rotation="90"
+                app:tint="@color/text_secondary" />
+
+            <ImageView
+                android:id="@+id/btnSearchNext"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_back"
+                android:background="@drawable/bg_icon_button"
+                android:rotation="-90"
+                android:layout_marginStart="2dp"
+                app:tint="@color/text_secondary" />
+
+            <ImageView
+                android:id="@+id/btnCloseSearch"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_close"
+                android:background="@drawable/bg_icon_button"
+                android:layout_marginStart="4dp"
+                app:tint="@color/text_secondary" />
+        </LinearLayout>
+
+        <!-- Replace Panel -->
+        <LinearLayout
+            android:id="@+id/replacePanel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/etReplaceQuery"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:hint="Заменить на..."
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_tertiary"
+                android:textSize="14sp"
+                android:background="@drawable/bg_input"
+                android:paddingHorizontal="14dp"
+                android:inputType="text"
+                android:maxLines="1" />
+
+            <TextView
+                android:id="@+id/btnReplace"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Заменить"
+                android:textSize="12sp"
+                android:textColor="@color/text_primary"
+                android:background="@drawable/bg_button_secondary"
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:layout_marginStart="8dp" />
+
+            <TextView
+                android:id="@+id/btnReplaceAll"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Все"
+                android:textSize="12sp"
+                android:textColor="@color/text_on_primary"
+                android:background="@drawable/bg_button_primary"
+                android:gravity="center"
+                android:paddingHorizontal="12dp"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Code Editor -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:background="@color/background_dark">
+
+        <com.autoclicker.app.util.CodeEditor
+            android:id="@+id/etScriptCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="top|start"
+            android:hint="// Код скрипта"
+            android:inputType="textMultiLine|textNoSuggestions"
+            android:fontFamily="monospace"
+            android:textSize="13sp"
+            android:lineSpacingExtra="4dp"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_tertiary"
+            android:background="@color/background_dark"
+            android:padding="16dp" />
+    </ScrollView>
+
+    <!-- Bottom Actions -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:background="@color/background_surface">
+
+        <TextView
+            android:id="@+id/btnSave"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_button_secondary"
+            android:text="Сохранить"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginEnd="6dp" />
+
+        <TextView
+            android:id="@+id/btnFloat"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_button_primary"
+            android:text="Запустить"
+            android:textColor="@color/text_on_primary"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginStart="6dp" />
+    </LinearLayout>
+
+    <!-- Log Panel -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:orientation="vertical"
+        android:background="@color/background_card">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="8dp">
+
+            <View
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:background="@drawable/circle_orange" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Консоль"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:textAllCaps="true"
+                android:letterSpacing="0.05"
+                android:layout_marginStart="8dp" />
+
+            <ImageView
+                android:id="@+id/btnClearLog"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:padding="4dp"
+                android:src="@drawable/ic_clear"
+                android:background="@drawable/bg_icon_button"
+                app:tint="@color/text_tertiary" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tvLog"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/success"
+                android:fontFamily="monospace"
+                android:textSize="11sp"
+                android:padding="12dp"
+                android:text="Готов к выполнению..." />
+        </ScrollView>
+    </LinearLayout>
+
+</LinearLayout>

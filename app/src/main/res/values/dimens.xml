@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Spacing -->
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">16dp</dimen>
+    <dimen name="spacing_lg">24dp</dimen>
+    <dimen name="spacing_xl">32dp</dimen>
+    <dimen name="spacing_xxl">48dp</dimen>
+    
+    <!-- Corner Radius -->
+    <dimen name="radius_sm">8dp</dimen>
+    <dimen name="radius_md">16dp</dimen>
+    <dimen name="radius_lg">24dp</dimen>
+    <dimen name="radius_xl">32dp</dimen>
+    <dimen name="radius_full">100dp</dimen>
+    
+    <!-- Card -->
+    <dimen name="card_radius">20dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="card_elevation">0dp</dimen>
+    
+    <!-- Button -->
+    <dimen name="button_height">56dp</dimen>
+    <dimen name="button_height_small">44dp</dimen>
+    <dimen name="button_radius">16dp</dimen>
+    <dimen name="button_icon_size">24dp</dimen>
+    
+    <!-- Icon -->
+    <dimen name="icon_sm">20dp</dimen>
+    <dimen name="icon_md">24dp</dimen>
+    <dimen name="icon_lg">32dp</dimen>
+    <dimen name="icon_xl">48dp</dimen>
+    
+    <!-- Toolbar -->
+    <dimen name="toolbar_height">64dp</dimen>
+    
+    <!-- FAB -->
+    <dimen name="fab_size">64dp</dimen>
+    <dimen name="fab_margin">20dp</dimen>
+    
+    <!-- Text -->
+    <dimen name="text_xs">11sp</dimen>
+    <dimen name="text_sm">13sp</dimen>
+    <dimen name="text_md">15sp</dimen>
+    <dimen name="text_lg">18sp</dimen>
+    <dimen name="text_xl">24sp</dimen>
+    <dimen name="text_xxl">32sp</dimen>
+    
+    <!-- Grid -->
+    <dimen name="grid_item_size">100dp</dimen>
+    <dimen name="grid_spacing">12dp</dimen>
+</resources>
