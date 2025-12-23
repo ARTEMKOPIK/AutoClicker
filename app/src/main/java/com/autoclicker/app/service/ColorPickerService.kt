@@ -31,6 +31,8 @@ class ColorPickerService : Service() {
         private const val CHANNEL_ID = "color_picker_channel"
         private const val NOTIFICATION_ID = 1003
         private const val MAX_HISTORY = 6
+        private const val PREFS_COLOR_HISTORY = "color_picker_history"
+        private const val KEY_HISTORY = "history"
 
         fun startService(context: Context) {
             val intent = Intent(context, ColorPickerService::class.java)
@@ -82,12 +84,6 @@ class ColorPickerService : Service() {
                 handler.postDelayed(this, 50)
             }
         }
-    }
-    
-    // Ключи для сохранения истории
-    private companion object {
-        private const val PREFS_COLOR_HISTORY = "color_picker_history"
-        private const val KEY_HISTORY = "history"
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
