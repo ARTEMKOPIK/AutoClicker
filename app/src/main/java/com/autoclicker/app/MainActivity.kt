@@ -73,14 +73,24 @@ class MainActivity : BaseActivity() {
     private fun setupButtons() {
         // Скрипты
         findViewById<LinearLayout>(R.id.btnScripts).setOnClickListener {
-            startActivity(Intent(this, ScriptListActivity::class.java))
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            try {
+                startActivity(Intent(this, ScriptListActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            } catch (e: Exception) {
+                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+                com.autoclicker.app.util.CrashHandler.logError("MainActivity", "Error opening ScriptListActivity", e)
+            }
         }
 
         // Новый скрипт
         findViewById<LinearLayout>(R.id.btnNewScript).setOnClickListener {
-            startActivity(Intent(this, ScriptEditorActivity::class.java))
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            try {
+                startActivity(Intent(this, ScriptEditorActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            } catch (e: Exception) {
+                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+                com.autoclicker.app.util.CrashHandler.logError("MainActivity", "Error opening ScriptEditorActivity", e)
+            }
         }
 
         // Инструкция
@@ -99,9 +109,14 @@ class MainActivity : BaseActivity() {
 
         // Пипетка
         findViewById<LinearLayout>(R.id.btnColorPicker).setOnClickListener {
-            if (checkPermissions()) {
-                ColorPickerService.startService(this)
-                Toast.makeText(this, "Пипетка запущена", Toast.LENGTH_SHORT).show()
+            try {
+                if (checkPermissions()) {
+                    ColorPickerService.startService(this)
+                    Toast.makeText(this, "Пипетка запущена", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+                com.autoclicker.app.util.CrashHandler.logError("MainActivity", "Error starting ColorPickerService", e)
             }
         }
 
@@ -113,9 +128,14 @@ class MainActivity : BaseActivity() {
 
         // Запуск панели (FAB)
         findViewById<FloatingActionButton>(R.id.btnStartPanel).setOnClickListener {
-            if (checkPermissions()) {
-                FloatingWindowService.startService(this)
-                Toast.makeText(this, "Панель запущена", Toast.LENGTH_SHORT).show()
+            try {
+                if (checkPermissions()) {
+                    FloatingWindowService.startService(this)
+                    Toast.makeText(this, "Панель запущена", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+                com.autoclicker.app.util.CrashHandler.logError("MainActivity", "Error starting FloatingWindowService", e)
             }
         }
 
@@ -134,28 +154,48 @@ class MainActivity : BaseActivity() {
 
         // Планировщик
         findViewById<LinearLayout>(R.id.btnScheduler).setOnClickListener {
-            startActivity(Intent(this, SchedulerActivity::class.java))
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            try {
+                startActivity(Intent(this, SchedulerActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            } catch (e: Exception) {
+                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+                com.autoclicker.app.util.CrashHandler.logError("MainActivity", "Error opening SchedulerActivity", e)
+            }
         }
 
         // Запись макроса
         findViewById<LinearLayout>(R.id.btnMacro).setOnClickListener {
-            if (checkPermissions()) {
-                com.autoclicker.app.service.MacroRecorderService.startService(this)
-                Toast.makeText(this, "Запись макроса запущена", Toast.LENGTH_SHORT).show()
+            try {
+                if (checkPermissions()) {
+                    com.autoclicker.app.service.MacroRecorderService.startService(this)
+                    Toast.makeText(this, "Запись макроса запущена", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+                com.autoclicker.app.util.CrashHandler.logError("MainActivity", "Error starting MacroRecorderService", e)
             }
         }
 
         // Профили
         findViewById<LinearLayout>(R.id.btnProfiles).setOnClickListener {
-            startActivity(Intent(this, ProfilesActivity::class.java))
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            try {
+                startActivity(Intent(this, ProfilesActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            } catch (e: Exception) {
+                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+                com.autoclicker.app.util.CrashHandler.logError("MainActivity", "Error opening ProfilesActivity", e)
+            }
         }
 
         // Логи
         findViewById<LinearLayout>(R.id.btnLogs)?.setOnClickListener {
-            startActivity(Intent(this, LogsActivity::class.java))
-            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            try {
+                startActivity(Intent(this, LogsActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            } catch (e: Exception) {
+                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+                com.autoclicker.app.util.CrashHandler.logError("MainActivity", "Error opening LogsActivity", e)
+            }
         }
 
         // Остановить
