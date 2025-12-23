@@ -78,8 +78,7 @@
                 android:textSize="13sp"
                 android:background="@drawable/bg_chip"
                 android:gravity="center"
-                android:paddingHorizontal="16dp"
-                android:selected="true" />
+                android:paddingHorizontal="16dp" />
 
             <TextView
                 android:id="@+id/chipInfo"
