@@ -122,6 +122,17 @@ class MacroRecorderService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        
+        // Устанавливаем обработчик ошибок для этого сервиса
+        Thread.currentThread().setUncaughtExceptionHandler { thread, throwable ->
+            com.autoclicker.app.util.CrashHandler.logCritical(
+                "MacroRecorderService",
+                "Критическая ошибка в записи макроса: ${throwable.message}",
+                throwable
+            )
+            com.autoclicker.app.util.CrashHandler.getInstance()?.uncaughtException(thread, throwable)
+        }
+        
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
         setupOverlay()

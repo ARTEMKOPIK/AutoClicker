@@ -15,6 +15,18 @@ class ClickerAccessibilityService : AccessibilityService() {
     override fun onServiceConnected() {
         super.onServiceConnected()
         instance = this
+        
+        // Устанавливаем обработчик ошибок для этого сервиса
+        Thread.currentThread().setUncaughtExceptionHandler { thread, throwable ->
+            com.autoclicker.app.util.CrashHandler.logCritical(
+                "ClickerAccessibilityService",
+                "Критическая ошибка в Accessibility Service: ${throwable.message}",
+                throwable
+            )
+            com.autoclicker.app.util.CrashHandler.getInstance()?.uncaughtException(thread, throwable)
+        }
+        
+        com.autoclicker.app.util.CrashHandler.logInfo("ClickerAccessibilityService", "✅ Accessibility Service подключен")
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {}

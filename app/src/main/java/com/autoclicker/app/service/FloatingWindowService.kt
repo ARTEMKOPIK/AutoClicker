@@ -93,6 +93,17 @@ class FloatingWindowService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        
+        // Устанавливаем обработчик ошибок для этого сервиса
+        Thread.currentThread().setUncaughtExceptionHandler { thread, throwable ->
+            com.autoclicker.app.util.CrashHandler.logCritical(
+                "FloatingWindowService",
+                "Критическая ошибка в сервисе: ${throwable.message}",
+                throwable
+            )
+            com.autoclicker.app.util.CrashHandler.getInstance()?.uncaughtException(thread, throwable)
+        }
+        
         storage = ScriptStorage(this)
         prefs = com.autoclicker.app.util.PrefsManager(this)
         createNotificationChannel()
@@ -406,15 +417,31 @@ class FloatingWindowService : Service() {
                     currentEngine = engine
                     engine.execute(code)
                     addLog("✅ Скрипт завершён")
+                } catch (e: kotlinx.coroutines.CancellationException) {
+                    // Нормальная отмена, не логируем как ошибку
+                    addLog("⏹️ Скрипт отменён")
+                } catch (e: OutOfMemoryError) {
+                    addLog("❌ Недостаточно памяти!")
+                    com.autoclicker.app.util.CrashHandler.logCritical(
+                        "FloatingWindowService",
+                        "OutOfMemoryError при выполнении скрипта '$currentScriptName'",
+                        e
+                    )
                 } catch (e: Exception) {
-                    if (e !is kotlinx.coroutines.CancellationException) {
-                        addLog("❌ Ошибка: ${e.message}")
-                        com.autoclicker.app.util.CrashHandler.logError(
-                            "FloatingWindowService",
-                            "Ошибка выполнения скрипта '$currentScriptName': ${e.message}",
-                            e
-                        )
-                    }
+                    addLog("❌ Ошибка: ${e.message}")
+                    com.autoclicker.app.util.CrashHandler.logError(
+                        "FloatingWindowService",
+                        "Ошибка выполнения скрипта '$currentScriptName': ${e.message}",
+                        e
+                    )
+                } catch (e: Error) {
+                    // Ловим все Error (включая StackOverflowError и т.д.)
+                    addLog("❌ Критическая ошибка: ${e.message}")
+                    com.autoclicker.app.util.CrashHandler.logCritical(
+                        "FloatingWindowService",
+                        "Критическая ошибка (Error) в скрипте '$currentScriptName': ${e.message}",
+                        e
+                    )
                 } finally {
                     currentEngine = null
                     handler.post {

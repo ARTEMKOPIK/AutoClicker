@@ -23,6 +23,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.autoclicker.app.R
+import com.autoclicker.app.util.CrashHandler
 import com.autoclicker.app.util.PrefsManager
 
 class ColorPickerService : Service() {
@@ -90,6 +91,17 @@ class ColorPickerService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        
+        // Устанавливаем обработчик ошибок для этого сервиса
+        Thread.currentThread().setUncaughtExceptionHandler { thread, throwable ->
+            com.autoclicker.app.util.CrashHandler.logCritical(
+                "ColorPickerService",
+                "Критическая ошибка в пипетке: ${throwable.message}",
+                throwable
+            )
+            com.autoclicker.app.util.CrashHandler.getInstance()?.uncaughtException(thread, throwable)
+        }
+        
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
         initVibrator()

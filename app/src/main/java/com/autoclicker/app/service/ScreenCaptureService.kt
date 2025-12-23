@@ -57,6 +57,17 @@ class ScreenCaptureService : Service() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        
+        // Устанавливаем обработчик ошибок для этого сервиса
+        Thread.currentThread().setUncaughtExceptionHandler { thread, throwable ->
+            com.autoclicker.app.util.CrashHandler.logCritical(
+                "ScreenCaptureService",
+                "Критическая ошибка в сервисе захвата экрана: ${throwable.message}",
+                throwable
+            )
+            com.autoclicker.app.util.CrashHandler.getInstance()?.uncaughtException(thread, throwable)
+        }
+        
         createNotificationChannel()
         
         val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -78,6 +89,10 @@ class ScreenCaptureService : Service() {
             // Валидация размеров
             if (screenWidth <= 0 || screenHeight <= 0 || screenDensity <= 0) {
                 android.util.Log.e("ScreenCapture", "Invalid screen dimensions: $screenWidth x $screenHeight, density: $screenDensity")
+                com.autoclicker.app.util.CrashHandler.logError(
+                    "ScreenCaptureService",
+                    "Неверные размеры экрана: ${screenWidth}x${screenHeight}, density: $screenDensity"
+                )
                 // Бросаем исключение вместо продолжения работы с невалидными данными
                 // Это предотвращает крэши и странное поведение при попытке создать VirtualDisplay
                 throw IllegalStateException("Invalid screen dimensions: ${screenWidth}x${screenHeight}, density: $screenDensity")
