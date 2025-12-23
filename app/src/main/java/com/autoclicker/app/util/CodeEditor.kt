@@ -84,6 +84,10 @@ class CodeEditor @JvmOverloads constructor(
 
     var searchListener: OnSearchListener? = null
 
+    companion object {
+        private const val MAX_UNDO_REDO_SIZE = 100
+    }
+
     init {
         gravity = Gravity.TOP or Gravity.START
         typeface = Typeface.MONOSPACE
