@@ -68,7 +68,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     
     // ML Kit для OCR
-    implementation("com.google.mlkit:text-recognition:16.0.3")
+    implementation("com.google.mlkit:text-recognition:16.0.1")
     
     // Telegram Bot API
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
