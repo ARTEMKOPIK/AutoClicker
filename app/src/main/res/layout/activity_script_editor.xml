@@ -179,7 +179,7 @@
                 android:inputType="text"
                 android:maxLines="1" />
 
-            <TextView
+            <Button
                 android:id="@+id/btnReplace"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
@@ -191,7 +191,7 @@
                 android:paddingHorizontal="12dp"
                 android:layout_marginStart="8dp" />
 
-            <TextView
+            <Button
                 android:id="@+id/btnReplaceAll"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
@@ -237,7 +237,7 @@
         android:padding="12dp"
         android:background="@color/background_surface">
 
-        <TextView
+        <Button
             android:id="@+id/btnSave"
             android:layout_width="0dp"
             android:layout_height="52dp"
@@ -250,7 +250,7 @@
             android:gravity="center"
             android:layout_marginEnd="6dp" />
 
-        <TextView
+        <Button
             android:id="@+id/btnFloat"
             android:layout_width="0dp"
             android:layout_height="52dp"

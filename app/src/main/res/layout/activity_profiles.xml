@@ -60,39 +60,16 @@
                 android:paddingBottom="88dp" />
 
             <!-- Empty State -->
-            <LinearLayout
-                android:id="@+id/emptyState"
+            <TextView
+                android:id="@+id/tvEmpty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:orientation="vertical"
+                android:text="Нет профилей\nНажмите + чтобы создать"
+                android:textColor="@color/text_secondary"
+                android:textSize="16sp"
                 android:gravity="center"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@drawable/ic_folder"
-                    android:alpha="0.3"
-                    app:tint="@color/text_secondary" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Нет профилей"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="16dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Нажмите + чтобы создать"
-                    android:textColor="@color/text_tertiary"
-                    android:textSize="14sp"
-                    android:layout_marginTop="4dp" />
-            </LinearLayout>
+                android:visibility="gone" />
         </FrameLayout>
     </LinearLayout>
 

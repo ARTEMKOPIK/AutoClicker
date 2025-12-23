@@ -128,14 +128,15 @@
         android:layout_marginTop="4dp" />
 
     <!-- Pick Button -->
-    <Button
+    <ImageButton
         android:id="@+id/btnPickColor"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:text="🎯 Выбрать цвет"
-        android:textColor="@color/text_on_primary"
+        android:src="@drawable/crosshair_indicator"
+        android:scaleType="centerInside"
         android:background="@drawable/bg_button_primary"
-        android:layout_marginTop="12dp" />
+        android:layout_marginTop="12dp"
+        android:contentDescription="Pick color" />
 
     <!-- Copy Buttons -->
     <LinearLayout
