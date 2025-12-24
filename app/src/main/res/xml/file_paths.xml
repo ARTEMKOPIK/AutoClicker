@@ -2,4 +2,5 @@
 <paths>
     <files-path name="exports" path="exports/" />
     <files-path name="logs" path="logs/" />
+    <external-files-path name="downloads" path="Download/" />
 </paths>

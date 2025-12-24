@@ -6,14 +6,22 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.autoclicker.app.base.BaseActivity
 import com.autoclicker.app.service.ScreenCaptureService
+import com.autoclicker.app.update.UpdateChecker
 
 class SettingsActivity : BaseActivity() {
+
+    private lateinit var updateChecker: UpdateChecker
+    private lateinit var progressCheckUpdate: ProgressBar
+    private lateinit var ivCheckUpdateArrow: ImageView
 
     private val screenCaptureLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -30,7 +38,13 @@ class SettingsActivity : BaseActivity() {
 
         findViewById<ImageView>(R.id.btnBack).setOnClickListener { finish() }
 
+        progressCheckUpdate = findViewById(R.id.progressCheckUpdate)
+        ivCheckUpdateArrow = findViewById(R.id.ivCheckUpdateArrow)
+        
+        updateChecker = UpdateChecker(this)
+
         setupPermissionItems()
+        setupVersionInfo()
     }
 
     override fun onResume() {
@@ -69,6 +83,34 @@ class SettingsActivity : BaseActivity() {
         findViewById<LinearLayout>(R.id.itemQuickActions).setOnClickListener {
             startActivity(Intent(this, QuickActionsActivity::class.java))
         }
+
+        findViewById<LinearLayout>(R.id.itemCheckUpdates).setOnClickListener {
+            checkForUpdates()
+        }
+    }
+
+    private fun setupVersionInfo() {
+        findViewById<TextView>(R.id.tvCurrentVersionInfo).text = "Текущая версия: ${BuildConfig.VERSION_NAME}"
+        findViewById<TextView>(R.id.tvAppVersion).text = "AutoClicker v${BuildConfig.VERSION_NAME}\nСделано с ❤️"
+    }
+
+    private fun checkForUpdates() {
+        progressCheckUpdate.visibility = View.VISIBLE
+        ivCheckUpdateArrow.visibility = View.GONE
+
+        updateChecker.checkManually {
+            runOnUiThread {
+                progressCheckUpdate.visibility = View.GONE
+                ivCheckUpdateArrow.visibility = View.VISIBLE
+                Toast.makeText(this, "У вас последняя версия!", Toast.LENGTH_SHORT).show()
+            }
+        }
+        
+        // Скрываем прогресс через 5 секунд на случай если диалог показался
+        progressCheckUpdate.postDelayed({
+            progressCheckUpdate.visibility = View.GONE
+            ivCheckUpdateArrow.visibility = View.VISIBLE
+        }, 5000)
     }
 
     private fun updatePermissionStatus() {

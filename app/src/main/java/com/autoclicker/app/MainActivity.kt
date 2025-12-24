@@ -24,6 +24,7 @@ import com.autoclicker.app.base.BaseActivity
 import com.autoclicker.app.service.ColorPickerService
 import com.autoclicker.app.service.FloatingWindowService
 import com.autoclicker.app.service.ScreenCaptureService
+import com.autoclicker.app.update.UpdateChecker
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : BaseActivity() {
@@ -32,6 +33,8 @@ class MainActivity : BaseActivity() {
     private lateinit var tvStatusHint: TextView
     private lateinit var statusCard: LinearLayout
     private lateinit var statusIndicator: View
+    
+    private lateinit var updateChecker: UpdateChecker
 
     private val screenCaptureLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -63,6 +66,10 @@ class MainActivity : BaseActivity() {
 
         setupButtons()
         updateStatus()
+        
+        // Проверяем обновления при запуске
+        updateChecker = UpdateChecker(this)
+        updateChecker.checkOnStartup()
     }
 
     override fun onResume() {
@@ -326,6 +333,13 @@ class MainActivity : BaseActivity() {
             tvStatus.setTextColor(ContextCompat.getColor(this, R.color.warning))
             statusCard.background = ContextCompat.getDrawable(this, R.drawable.bg_status_warning)
             (statusIndicator.background as? GradientDrawable)?.setColor(ContextCompat.getColor(this, R.color.warning))
+        }
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        if (::updateChecker.isInitialized) {
+            updateChecker.cleanup()
         }
     }
 }
