@@ -1,0 +1,54 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Каждую неделю в понедельник
+    - cron: '0 0 * * 1'
+
+jobs:
+  dependency-check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Generate Gradle Wrapper
+      run: gradle wrapper
+
+    - name: Check for dependency updates
+      run: |
+        ./gradlew dependencies --configuration releaseRuntimeClasspath > deps.txt
+        echo "### 📦 Dependencies Report" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        cat deps.txt | head -100 >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+
+    - name: Check for known vulnerabilities
+      run: |
+        # Проверяем известные уязвимые версии
+        VULNERABLE=""
+        
+        if grep -q "okhttp:4.9" deps.txt 2>/dev/null; then
+          VULNERABLE="${VULNERABLE}⚠️ OkHttp 4.9.x has known vulnerabilities\n"
+        fi
+        
+        if grep -q "gson:2.8" deps.txt 2>/dev/null; then
+          VULNERABLE="${VULNERABLE}⚠️ Gson 2.8.x is outdated\n"
+        fi
+        
+        if [ -n "$VULNERABLE" ]; then
+          echo "### ⚠️ Security Warnings" >> $GITHUB_STEP_SUMMARY
+          echo -e "$VULNERABLE" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "### ✅ No known vulnerabilities found" >> $GITHUB_STEP_SUMMARY
+        fi
