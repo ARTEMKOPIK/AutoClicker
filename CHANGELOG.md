@@ -1,4 +1,4 @@
-## [1.0.10] - 2025-12-24\n\n### 🐛 Исправления
-- fix: remove debug logs from UpdateManager, cleanup temp files
+## [1.0.11] - 2025-12-24\n\n### 🐛 Исправления
+- fix: UI/UX bugs and crash fixes
 
 
