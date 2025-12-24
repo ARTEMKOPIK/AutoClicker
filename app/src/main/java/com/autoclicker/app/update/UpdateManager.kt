@@ -65,23 +65,14 @@ class UpdateManager(private val context: Context) {
      * @return UpdateInfo если есть новая версия, null если нет
      */
     suspend fun checkForUpdate(force: Boolean = false): UpdateInfo? = withContext(Dispatchers.IO) {
-        // DEBUG: Отправляем в Telegram что проверка началась
-        com.autoclicker.app.util.CrashHandler.logError(
-            "UpdateDebug", 
-            "Starting update check, force=$force, current=${BuildConfig.VERSION_NAME}"
-        )
-        
         try {
             // Проверяем интервал
             if (!force) {
                 val lastCheck = prefs.getLong(KEY_LAST_CHECK, 0)
                 if (System.currentTimeMillis() - lastCheck < CHECK_INTERVAL_MS) {
-                    android.util.Log.d("UpdateManager", "Skipping check - too soon")
                     return@withContext null
                 }
             }
-            
-            android.util.Log.d("UpdateManager", "Checking for updates... force=$force")
             
             val request = Request.Builder()
                 .url(API_URL)
@@ -93,13 +84,7 @@ class UpdateManager(private val context: Context) {
             
             val response = client.newCall(request).execute()
             
-            android.util.Log.d("UpdateManager", "Response code: ${response.code}")
-            
             if (!response.isSuccessful) {
-                com.autoclicker.app.util.CrashHandler.logError(
-                    "UpdateDebug", 
-                    "API failed: ${response.code}"
-                )
                 return@withContext null
             }
             
@@ -113,20 +98,9 @@ class UpdateManager(private val context: Context) {
             val latestVersion = release.tagName.removePrefix("v")
             val currentVersion = BuildConfig.VERSION_NAME
             
-            android.util.Log.d("UpdateManager", "Latest: $latestVersion, Current: $currentVersion")
-            
-            // DEBUG: Отправляем в Telegram результат
-            com.autoclicker.app.util.CrashHandler.logError(
-                "UpdateDebug", 
-                "Result: latest=$latestVersion, current=$currentVersion, isNewer=${isNewerVersion(latestVersion, currentVersion)}"
-            )
-            
             if (!isNewerVersion(latestVersion, currentVersion)) {
-                android.util.Log.d("UpdateManager", "No update available")
                 return@withContext null
             }
-            
-            android.util.Log.d("UpdateManager", "Update available!")
             
             // Проверяем, не пропустил ли пользователь эту версию
             val skippedVersion = prefs.getString(KEY_SKIPPED_VERSION, null)
@@ -154,11 +128,7 @@ class UpdateManager(private val context: Context) {
             )
             
         } catch (e: Exception) {
-            com.autoclicker.app.util.CrashHandler.logError(
-                "UpdateDebug", 
-                "Exception: ${e.message}",
-                e
-            )
+            e.printStackTrace()
             return@withContext null
         }
     }
