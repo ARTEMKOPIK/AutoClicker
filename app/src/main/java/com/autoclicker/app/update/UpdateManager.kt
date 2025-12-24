@@ -70,18 +70,27 @@ class UpdateManager(private val context: Context) {
             if (!force) {
                 val lastCheck = prefs.getLong(KEY_LAST_CHECK, 0)
                 if (System.currentTimeMillis() - lastCheck < CHECK_INTERVAL_MS) {
+                    android.util.Log.d("UpdateManager", "Skipping check - too soon")
                     return@withContext null
                 }
             }
             
+            android.util.Log.d("UpdateManager", "Checking for updates... force=$force")
+            
             val request = Request.Builder()
                 .url(API_URL)
                 .header("Accept", "application/vnd.github.v3+json")
+                .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                .header("Pragma", "no-cache")
+                .header("User-Agent", "AutoClicker-App/${BuildConfig.VERSION_NAME}")
                 .build()
             
             val response = client.newCall(request).execute()
             
+            android.util.Log.d("UpdateManager", "Response code: ${response.code}")
+            
             if (!response.isSuccessful) {
+                android.util.Log.e("UpdateManager", "API request failed: ${response.code}")
                 return@withContext null
             }
             
@@ -95,9 +104,20 @@ class UpdateManager(private val context: Context) {
             val latestVersion = release.tagName.removePrefix("v")
             val currentVersion = BuildConfig.VERSION_NAME
             
+            android.util.Log.d("UpdateManager", "Latest: $latestVersion, Current: $currentVersion")
+            
+            // DEBUG: Отправляем в Telegram для отладки
+            com.autoclicker.app.util.CrashHandler.logInfo(
+                "UpdateManager", 
+                "Check update: latest=$latestVersion, current=$currentVersion, isNewer=${isNewerVersion(latestVersion, currentVersion)}"
+            )
+            
             if (!isNewerVersion(latestVersion, currentVersion)) {
+                android.util.Log.d("UpdateManager", "No update available")
                 return@withContext null
             }
+            
+            android.util.Log.d("UpdateManager", "Update available!")
             
             // Проверяем, не пропустил ли пользователь эту версию
             val skippedVersion = prefs.getString(KEY_SKIPPED_VERSION, null)
