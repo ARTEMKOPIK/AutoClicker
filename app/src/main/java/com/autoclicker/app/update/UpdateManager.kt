@@ -65,6 +65,12 @@ class UpdateManager(private val context: Context) {
      * @return UpdateInfo если есть новая версия, null если нет
      */
     suspend fun checkForUpdate(force: Boolean = false): UpdateInfo? = withContext(Dispatchers.IO) {
+        // DEBUG: Отправляем в Telegram что проверка началась
+        com.autoclicker.app.util.CrashHandler.logError(
+            "UpdateDebug", 
+            "Starting update check, force=$force, current=${BuildConfig.VERSION_NAME}"
+        )
+        
         try {
             // Проверяем интервал
             if (!force) {
@@ -90,7 +96,10 @@ class UpdateManager(private val context: Context) {
             android.util.Log.d("UpdateManager", "Response code: ${response.code}")
             
             if (!response.isSuccessful) {
-                android.util.Log.e("UpdateManager", "API request failed: ${response.code}")
+                com.autoclicker.app.util.CrashHandler.logError(
+                    "UpdateDebug", 
+                    "API failed: ${response.code}"
+                )
                 return@withContext null
             }
             
@@ -106,10 +115,10 @@ class UpdateManager(private val context: Context) {
             
             android.util.Log.d("UpdateManager", "Latest: $latestVersion, Current: $currentVersion")
             
-            // DEBUG: Отправляем в Telegram для отладки
-            com.autoclicker.app.util.CrashHandler.logInfo(
-                "UpdateManager", 
-                "Check update: latest=$latestVersion, current=$currentVersion, isNewer=${isNewerVersion(latestVersion, currentVersion)}"
+            // DEBUG: Отправляем в Telegram результат
+            com.autoclicker.app.util.CrashHandler.logError(
+                "UpdateDebug", 
+                "Result: latest=$latestVersion, current=$currentVersion, isNewer=${isNewerVersion(latestVersion, currentVersion)}"
             )
             
             if (!isNewerVersion(latestVersion, currentVersion)) {
@@ -145,7 +154,11 @@ class UpdateManager(private val context: Context) {
             )
             
         } catch (e: Exception) {
-            e.printStackTrace()
+            com.autoclicker.app.util.CrashHandler.logError(
+                "UpdateDebug", 
+                "Exception: ${e.message}",
+                e
+            )
             return@withContext null
         }
     }
