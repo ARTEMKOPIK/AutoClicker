@@ -110,18 +110,35 @@
                 android:value="overlay" />
         </service>
 
-        <!-- Виджет -->
+        <!-- Виджет с выбором скрипта -->
         <receiver
             android:name=".widget.ScriptWidget"
-            android:exported="true">
+            android:exported="true"
+            android:label="AutoClicker">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.autoclicker.app.ACTION_START_SCRIPT" />
                 <action android:name="com.autoclicker.app.ACTION_STOP_SCRIPT" />
+                <action android:name="com.autoclicker.app.ACTION_NEXT_SCRIPT" />
+                <action android:name="com.autoclicker.app.ACTION_PREV_SCRIPT" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info" />
+        </receiver>
+
+        <!-- Мини-виджет быстрого запуска -->
+        <receiver
+            android:name=".widget.QuickLaunchWidget"
+            android:exported="true"
+            android:label="AutoClicker Quick">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.autoclicker.app.ACTION_TOGGLE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_quick_launch_info" />
         </receiver>
 
         <!-- Планировщик -->

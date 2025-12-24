@@ -73,7 +73,8 @@
     <string name="notification_panel_active">Панель управления активна</string>
     
     <!-- Widget -->
-    <string name="widget_description">Быстрый запуск скриптов AutoClicker</string>
+    <string name="widget_description">Быстрый запуск скриптов AutoClicker с выбором</string>
+    <string name="widget_quick_description">Кнопка запуска/остановки AutoClicker</string>
     
     <!-- Macro Recorder -->
     <string name="macro_recording">Запись макроса</string>
