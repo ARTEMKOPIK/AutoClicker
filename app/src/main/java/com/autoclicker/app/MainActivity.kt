@@ -100,6 +100,17 @@ class MainActivity : BaseActivity() {
             }
         }
 
+        // Визуальный редактор
+        findViewById<LinearLayout>(R.id.btnVisualEditor).setOnClickListener {
+            try {
+                startActivity(Intent(this, com.autoclicker.app.visual.VisualEditorActivity::class.java))
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            } catch (e: Exception) {
+                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+                com.autoclicker.app.util.CrashHandler.logError("MainActivity", "Error opening VisualEditorActivity", e)
+            }
+        }
+
         // Инструкция
         findViewById<LinearLayout>(R.id.btnHelp).setOnClickListener {
             showHelpDialog()

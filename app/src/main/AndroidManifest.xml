@@ -43,6 +43,7 @@
         <activity android:name=".LogsActivity" android:exported="false" />
         <activity android:name=".VariablesActivity" android:exported="false" />
         <activity android:name=".QuickActionsActivity" android:exported="false" />
+        <activity android:name=".visual.VisualEditorActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
 
         <service
             android:name=".service.ClickerAccessibilityService"
