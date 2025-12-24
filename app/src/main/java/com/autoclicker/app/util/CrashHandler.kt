@@ -57,6 +57,11 @@ class CrashHandler private constructor(
     private val failedAttempts = AtomicInteger(0)
     private val maxRetries = 3
     
+    // Дедупликация ошибок - не отправлять одинаковые ошибки чаще чем раз в 5 минут
+    private val recentErrors = mutableMapOf<String, Long>()
+    private val errorDedupeIntervalMs = 5 * 60 * 1000L // 5 минут
+    private val recentErrorsLock = Any()
+    
     // ANR detection
     private var anrWatchdog: Thread? = null
     private val anrThresholdMs = 5000L // 5 секунд
@@ -317,6 +322,20 @@ class CrashHandler private constructor(
     fun reportCritical(tag: String, message: String, throwable: Throwable?) {
         if (BOT_TOKEN.isEmpty() || CHAT_ID.isEmpty()) return
         
+        Log.e(tag, message, throwable)
+        
+        // Дедупликация критических ошибок тоже (но с меньшим интервалом - 1 минута)
+        val errorKey = "CRITICAL_" + generateErrorKey(tag, message, throwable)
+        val now = System.currentTimeMillis()
+        synchronized(recentErrorsLock) {
+            val lastTime = recentErrors[errorKey]
+            if (lastTime != null && now - lastTime < 60_000L) { // 1 минута для критических
+                Log.d("CrashHandler", "Skipping duplicate critical error")
+                return
+            }
+            recentErrors[errorKey] = now
+        }
+        
         val stackTrace = throwable?.let {
             val sw = StringWriter()
             val pw = PrintWriter(sw)
@@ -331,8 +350,6 @@ class CrashHandler private constructor(
             stackTrace = stackTrace,
             extras = mapOf("Memory" to getMemoryInfo())
         )
-        
-        Log.e(tag, message, throwable)
         
         // Синхронная отправка в отдельном потоке
         Thread {
@@ -393,6 +410,21 @@ class CrashHandler private constructor(
     fun reportError(tag: String, message: String, throwable: Throwable? = null, level: ErrorLevel = ErrorLevel.ERROR) {
         if (BOT_TOKEN.isEmpty() || CHAT_ID.isEmpty()) return
 
+        // Также логируем локально (всегда)
+        when (level) {
+            ErrorLevel.DEBUG -> Log.d(tag, message, throwable)
+            ErrorLevel.INFO -> Log.i(tag, message, throwable)
+            ErrorLevel.WARNING -> Log.w(tag, message, throwable)
+            ErrorLevel.ERROR, ErrorLevel.CRASH, ErrorLevel.CRITICAL, ErrorLevel.ANR -> Log.e(tag, message, throwable)
+        }
+
+        // Дедупликация: не отправляем одинаковые ошибки чаще чем раз в 5 минут
+        val errorKey = generateErrorKey(tag, message, throwable)
+        if (isDuplicateError(errorKey)) {
+            Log.d("CrashHandler", "Skipping duplicate error: $tag - ${message.take(50)}")
+            return
+        }
+
         val stackTrace = throwable?.let {
             val sw = StringWriter()
             val pw = PrintWriter(sw)
@@ -407,19 +439,45 @@ class CrashHandler private constructor(
             stackTrace = stackTrace
         )
 
-        // Также логируем локально
-        when (level) {
-            ErrorLevel.DEBUG -> Log.d(tag, message, throwable)
-            ErrorLevel.INFO -> Log.i(tag, message, throwable)
-            ErrorLevel.WARNING -> Log.w(tag, message, throwable)
-            ErrorLevel.ERROR, ErrorLevel.CRASH, ErrorLevel.CRITICAL, ErrorLevel.ANR -> Log.e(tag, message, throwable)
-        }
-
         // Для ERROR и выше добавляем в очередь с гарантированной доставкой
         if (level.ordinal >= ErrorLevel.ERROR.ordinal) {
             addToQueue(report)
         } else {
             sendToTelegramAsync(report)
+        }
+    }
+    
+    /**
+     * Генерирует уникальный ключ для ошибки на основе тега, сообщения и первых строк стектрейса
+     */
+    private fun generateErrorKey(tag: String, message: String, throwable: Throwable?): String {
+        val stackKey = throwable?.stackTrace?.take(3)?.joinToString("|") { 
+            "${it.className}.${it.methodName}:${it.lineNumber}" 
+        } ?: ""
+        return "$tag|${message.take(100)}|$stackKey".hashCode().toString()
+    }
+    
+    /**
+     * Проверяет, является ли ошибка дубликатом (была отправлена недавно)
+     * @return true если это дубликат и отправлять не нужно
+     */
+    private fun isDuplicateError(errorKey: String): Boolean {
+        val now = System.currentTimeMillis()
+        
+        synchronized(recentErrorsLock) {
+            // Очищаем старые записи
+            val expiredKeys = recentErrors.filter { now - it.value > errorDedupeIntervalMs }.keys
+            expiredKeys.forEach { recentErrors.remove(it) }
+            
+            // Проверяем есть ли такая ошибка
+            val lastTime = recentErrors[errorKey]
+            if (lastTime != null && now - lastTime < errorDedupeIntervalMs) {
+                return true // Дубликат
+            }
+            
+            // Запоминаем эту ошибку
+            recentErrors[errorKey] = now
+            return false
         }
     }
     
