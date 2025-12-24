@@ -138,6 +138,11 @@ class FloatingWindowService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Проверяем что сервис полностью инициализирован
+        if (!::prefs.isInitialized || !::storage.isInitialized) {
+            return START_NOT_STICKY
+        }
+        
         intent?.getStringExtra(EXTRA_SCRIPT_ID)?.let { scriptId ->
             selectScript(scriptId)
         }

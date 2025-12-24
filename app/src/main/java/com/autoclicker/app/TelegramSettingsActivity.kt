@@ -132,7 +132,7 @@ class TelegramSettingsActivity : BaseActivity() {
     private fun setLoading(loading: Boolean) {
         btnTest.isEnabled = !loading
         btnSave.isEnabled = !loading
-        btnTest.text = if (loading) "Отправка..." else getString(R.string.action_test)
+        btnTest.text = if (loading) "Отправка..." else "🧪 Тест подключения"
         progressBar?.visibility = if (loading) View.VISIBLE else View.GONE
     }
 }

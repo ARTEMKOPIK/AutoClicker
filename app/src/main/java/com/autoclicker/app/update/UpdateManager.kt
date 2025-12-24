@@ -32,9 +32,12 @@ class UpdateManager(private val context: Context) {
         private const val KEY_LAST_CHECK = "last_check_time"
         private const val KEY_SKIPPED_VERSION = "skipped_version"
         private const val KEY_DOWNLOAD_ID = "download_id"
+        private const val KEY_APP_LAUNCHES = "app_launches"
         
-        // Проверять обновления не чаще раза в час
-        private const val CHECK_INTERVAL_MS = 60 * 60 * 1000L
+        // Проверять обновления не чаще раза в 6 часов
+        private const val CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000L
+        // Первые 3 запуска всегда проверяем обновления
+        private const val ALWAYS_CHECK_FIRST_LAUNCHES = 3
         
         @Volatile
         private var instance: UpdateManager? = null
@@ -66,8 +69,12 @@ class UpdateManager(private val context: Context) {
      */
     suspend fun checkForUpdate(force: Boolean = false): UpdateInfo? = withContext(Dispatchers.IO) {
         try {
-            // Проверяем интервал
-            if (!force) {
+            // Увеличиваем счётчик запусков
+            val launches = prefs.getInt(KEY_APP_LAUNCHES, 0) + 1
+            prefs.edit().putInt(KEY_APP_LAUNCHES, launches).apply()
+            
+            // Проверяем интервал (но первые N запусков всегда проверяем)
+            if (!force && launches > ALWAYS_CHECK_FIRST_LAUNCHES) {
                 val lastCheck = prefs.getLong(KEY_LAST_CHECK, 0)
                 if (System.currentTimeMillis() - lastCheck < CHECK_INTERVAL_MS) {
                     return@withContext null

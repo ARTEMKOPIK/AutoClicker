@@ -252,12 +252,14 @@ log("Скрипт завершён")"""
             etSearchQuery.requestFocus()
             // Если есть выделенный текст, используем его для поиска
             val text = etCode.text?.toString() ?: ""
-            val start = etCode.selectionStart.coerceIn(0, text.length)
-            val end = etCode.selectionEnd.coerceIn(0, text.length)
-            if (start < end && end - start < 100) {
-                val selectedText = text.substring(start, end)
-                etSearchQuery.setText(selectedText)
-                etCode.search(selectedText)
+            if (text.isNotEmpty()) {
+                val start = etCode.selectionStart.coerceIn(0, text.length)
+                val end = etCode.selectionEnd.coerceIn(0, text.length)
+                if (start < end && end - start < 100) {
+                    val selectedText = text.substring(start, end)
+                    etSearchQuery.setText(selectedText)
+                    etCode.search(selectedText)
+                }
             }
         } else {
             etCode.clearSearch()

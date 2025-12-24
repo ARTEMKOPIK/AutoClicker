@@ -109,8 +109,14 @@ class LogsActivity : BaseActivity(), ScriptLogger.LogListener {
         adapter.submitList(logs)
         tvLogCount.text = "${logs.size} записей"
         
-        // Scroll to bottom
-        if (logs.isNotEmpty()) {
+        // Показываем/скрываем empty state
+        val tvEmpty = findViewById<TextView>(R.id.tvEmpty)
+        if (logs.isEmpty()) {
+            tvEmpty.visibility = View.VISIBLE
+            rvLogs.visibility = View.GONE
+        } else {
+            tvEmpty.visibility = View.GONE
+            rvLogs.visibility = View.VISIBLE
             rvLogs.scrollToPosition(logs.size - 1)
         }
     }
