@@ -102,11 +102,37 @@ class ColorPickerService : Service() {
             com.autoclicker.app.util.CrashHandler.getInstance()?.uncaughtException(thread, throwable)
         }
         
+        // Проверяем разрешение на overlay ПЕРЕД созданием окна
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
+            com.autoclicker.app.util.CrashHandler.logError(
+                "ColorPickerService",
+                "Нет разрешения на overlay"
+            )
+            handler.post {
+                Toast.makeText(this, "Включите разрешение 'Поверх других приложений'", Toast.LENGTH_LONG).show()
+            }
+            stopSelf()
+            return
+        }
+        
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification())
         initVibrator()
         loadColorHistory()
-        setupFloatingPicker()
+        
+        try {
+            setupFloatingPicker()
+        } catch (e: Exception) {
+            com.autoclicker.app.util.CrashHandler.logError(
+                "ColorPickerService",
+                "Ошибка создания окна пипетки: ${e.message}",
+                e
+            )
+            handler.post {
+                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+            stopSelf()
+        }
     }
     
     private fun loadColorHistory() {

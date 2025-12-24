@@ -104,11 +104,37 @@ class FloatingWindowService : Service() {
             com.autoclicker.app.util.CrashHandler.getInstance()?.uncaughtException(thread, throwable)
         }
         
+        // Проверяем разрешение на overlay ПЕРЕД созданием окна
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
+            com.autoclicker.app.util.CrashHandler.logError(
+                "FloatingWindowService",
+                "Нет разрешения на overlay, сервис не может запуститься"
+            )
+            handler.post {
+                Toast.makeText(this, "Включите разрешение 'Поверх других приложений'", Toast.LENGTH_LONG).show()
+            }
+            stopSelf()
+            return
+        }
+        
         storage = ScriptStorage(this)
         prefs = com.autoclicker.app.util.PrefsManager(this)
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, createNotification("Панель управления активна"))
-        setupFloatingWindow()
+        
+        try {
+            setupFloatingWindow()
+        } catch (e: Exception) {
+            com.autoclicker.app.util.CrashHandler.logError(
+                "FloatingWindowService",
+                "Ошибка создания окна: ${e.message}",
+                e
+            )
+            handler.post {
+                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+            stopSelf()
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
