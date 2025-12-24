@@ -27,7 +27,7 @@ jobs:
 
     - name: Check for dependency updates
       run: |
-        ./gradlew dependencies --configuration releaseRuntimeClasspath > deps.txt
+        ./gradlew app:dependencies --configuration releaseRuntimeClasspath > deps.txt
         echo "### 📦 Dependencies Report" >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
         cat deps.txt | head -100 >> $GITHUB_STEP_SUMMARY
