@@ -34,10 +34,12 @@ jobs:
 
   # 2. Сборка и релиз
   release:
-    needs: check
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
+   needs: check
+   runs-on: ubuntu-latest
+   permissions:
+     contents: write
+     issues: write
+     pull-requests: write
 
     steps:
     - uses: actions/checkout@v4
