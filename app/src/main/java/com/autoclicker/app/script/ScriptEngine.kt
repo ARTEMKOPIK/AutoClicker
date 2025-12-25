@@ -750,7 +750,7 @@ class ScriptEngine(
      */
     private fun validateSleepDuration(ms: Long): Boolean {
         if (ms < 0) {
-            log("⚠️ Невалидная задержка: $msms (должно быть >= 0)")
+            log("⚠️ Невалидная задержка: $ms (должно быть >= 0)")
             return false
         }
         return true

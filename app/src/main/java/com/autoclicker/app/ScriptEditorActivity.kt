@@ -487,13 +487,6 @@ log("Скрипт завершён")"""
         updateUndoRedoButtons()
     }
 
-    override fun onDestroy() {
-        autoSaveHandler.removeCallbacksAndMessages(null)
-        autoCompleteHelper.cleanup()
-        syntaxHighlighter.cleanup()
-        super.onDestroy()
-    }
-
     private fun saveScript(silent: Boolean = false) {
         val name = etName.text.toString().ifEmpty { "Без названия" }
         val code = etCode.text.toString()
@@ -606,12 +599,14 @@ log("Скрипт завершён")"""
 
     override fun onDestroy() {
         autoSaveHandler.removeCallbacksAndMessages(null) // Удаляем ВСЕ callbacks
+
         if (::syntaxHighlighter.isInitialized) {
-            syntaxHighlighter.detach()
+            syntaxHighlighter.cleanup()
         }
         if (::autoCompleteHelper.isInitialized) {
-            autoCompleteHelper.dismiss()
+            autoCompleteHelper.cleanup()
         }
+
         super.onDestroy()
     }
 }
