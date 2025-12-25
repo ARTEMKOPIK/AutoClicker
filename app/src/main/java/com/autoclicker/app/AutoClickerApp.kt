@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Process
 import android.os.StrictMode
 import com.autoclicker.app.util.CrashHandler
+import com.autoclicker.app.util.ThemeManager
 import java.io.File
 
 class AutoClickerApp : Application() {
@@ -23,6 +24,9 @@ class AutoClickerApp : Application() {
         
         // Инициализируем обработчик крашей ПЕРВЫМ
         CrashHandler.init(this)
+        
+        // Применяем сохранённую тему
+        ThemeManager.applyTheme(this)
         
         // Регистрируем обработчик для всех потоков
         setupGlobalExceptionHandlers()

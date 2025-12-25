@@ -7,15 +7,19 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.autoclicker.app.base.BaseActivity
 import com.autoclicker.app.service.ScreenCaptureService
 import com.autoclicker.app.update.UpdateChecker
+import com.autoclicker.app.util.ThemeManager
 
 class SettingsActivity : BaseActivity() {
 
@@ -53,6 +57,7 @@ class SettingsActivity : BaseActivity() {
         updateChecker = UpdateChecker(this)
 
         setupPermissionItems()
+        setupThemeSelector()
         setupVersionInfo()
     }
 
@@ -95,6 +100,43 @@ class SettingsActivity : BaseActivity() {
 
         findViewById<LinearLayout>(R.id.itemCheckUpdates).setOnClickListener {
             checkForUpdates()
+        }
+    }
+
+    private fun setupThemeSelector() {
+        val spinner = findViewById<Spinner>(R.id.spinnerTheme)
+        
+        // Создаём адаптер со списком тем
+        val themes = ThemeManager.getAllThemeModes()
+        val themeNames = themes.map { it.second }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, themeNames)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+        
+        // Устанавливаем текущую выбранную тему
+        val currentTheme = ThemeManager.getThemeMode(this)
+        val currentIndex = themes.indexOfFirst { it.first == currentTheme }
+        if (currentIndex >= 0) {
+            spinner.setSelection(currentIndex)
+        }
+        
+        // Обработчик выбора темы
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedTheme = themes[position].first
+                
+                // Проверяем, изменилась ли тема
+                if (selectedTheme != currentTheme) {
+                    ThemeManager.setThemeMode(this@SettingsActivity, selectedTheme)
+                    
+                    // Перезапускаем активити для применения темы
+                    recreate()
+                }
+            }
+            
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Ничего не делаем
+            }
         }
     }
 
