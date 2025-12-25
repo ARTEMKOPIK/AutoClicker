@@ -65,4 +65,20 @@
     <color name="syntax_string">#8BC34A</color>
     <color name="syntax_number">#03A9F4</color>
     <color name="syntax_comment">#757575</color>
+    
+    <!-- Light Theme Colors -->
+    <color name="background_light">#F8F9FA</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="card_light">#FFFFFF</color>
+    <color name="card_elevated_light">#F3F4F6</color>
+    <color name="input_light">#F9FAFB</color>
+    
+    <!-- Light Theme Text -->
+    <color name="text_primary_light">#1E293B</color>
+    <color name="text_secondary_light">#475569</color>
+    <color name="text_tertiary_light">#94A3B8</color>
+    
+    <!-- Light Theme Dividers -->
+    <color name="divider_light">#E2E8F0</color>
+    <color name="border_light">#CBD5E1</color>
 </resources>
