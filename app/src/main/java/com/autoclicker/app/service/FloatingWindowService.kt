@@ -28,7 +28,6 @@ class FloatingWindowService : Service() {
 
     companion object {
         private const val CHANNEL_ID = "floating_channel"
-        private const val NOTIFICATION_ID = 1002
         private const val EXTRA_SCRIPT_ID = "script_id"
 
         fun startService(context: Context, scriptId: String? = null) {
@@ -93,8 +92,7 @@ class FloatingWindowService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        
-        // Устанавливаем обработчик ошибок для этого сервиса
+
         Thread.currentThread().setUncaughtExceptionHandler { thread, throwable ->
             com.autoclicker.app.util.CrashHandler.logCritical(
                 "FloatingWindowService",
@@ -103,8 +101,20 @@ class FloatingWindowService : Service() {
             )
             com.autoclicker.app.util.CrashHandler.getInstance()?.uncaughtException(thread, throwable)
         }
-        
-        // Проверяем разрешение на overlay ПЕРЕД созданием окна
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        startForeground(
+            com.autoclicker.app.util.Constants.NOTIFICATION_ID_FLOATING_WINDOW,
+            createNotification(
+                if (isRunning && currentScriptName.isNotEmpty()) {
+                    "▶️ $currentScriptName"
+                } else {
+                    "Панель управления активна"
+                }
+            )
+        )
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
             com.autoclicker.app.util.CrashHandler.logError(
                 "FloatingWindowService",
@@ -114,38 +124,37 @@ class FloatingWindowService : Service() {
                 Toast.makeText(this, "Включите разрешение 'Поверх других приложений'", Toast.LENGTH_LONG).show()
             }
             stopSelf()
-            return
-        }
-        
-        storage = ScriptStorage(this)
-        prefs = com.autoclicker.app.util.PrefsManager(this)
-        createNotificationChannel()
-        startForeground(com.autoclicker.app.util.Constants.NOTIFICATION_ID_FLOATING_WINDOW, createNotification("Панель управления активна"))
-        
-        try {
-            setupFloatingWindow()
-        } catch (e: Exception) {
-            com.autoclicker.app.util.CrashHandler.logError(
-                "FloatingWindowService",
-                "Ошибка создания окна: ${e.message}",
-                e
-            )
-            handler.post {
-                Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
-            }
-            stopSelf()
-        }
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Проверяем что сервис полностью инициализирован
-        if (!::prefs.isInitialized || !::storage.isInitialized) {
             return START_NOT_STICKY
         }
-        
+
+        if (!::storage.isInitialized) {
+            storage = ScriptStorage(this)
+        }
+        if (!::prefs.isInitialized) {
+            prefs = com.autoclicker.app.util.PrefsManager(this)
+        }
+
+        if (!::floatingView.isInitialized) {
+            try {
+                setupFloatingWindow()
+            } catch (e: Exception) {
+                com.autoclicker.app.util.CrashHandler.logError(
+                    "FloatingWindowService",
+                    "Ошибка создания окна: ${e.message}",
+                    e
+                )
+                handler.post {
+                    Toast.makeText(this, "Ошибка: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+                stopSelf()
+                return START_NOT_STICKY
+            }
+        }
+
         intent?.getStringExtra(EXTRA_SCRIPT_ID)?.let { scriptId ->
             selectScript(scriptId)
         }
+
         return START_NOT_STICKY
     }
 
@@ -545,6 +554,7 @@ class FloatingWindowService : Service() {
     }
 
     private fun createNotification(text: String): Notification {
+        createNotificationChannel()
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("AutoClicker")
             .setContentText(text)
@@ -556,7 +566,10 @@ class FloatingWindowService : Service() {
 
     private fun updateNotification(text: String) {
         val notification = createNotification(text)
-        getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification)
+        getSystemService(NotificationManager::class.java).notify(
+            com.autoclicker.app.util.Constants.NOTIFICATION_ID_FLOATING_WINDOW, 
+            notification
+        )
     }
 
     override fun onDestroy() {
