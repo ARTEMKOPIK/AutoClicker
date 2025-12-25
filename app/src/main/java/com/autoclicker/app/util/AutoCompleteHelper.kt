@@ -91,11 +91,12 @@ class AutoCompleteHelper(
     }
 
     private fun findWordStart(text: String, position: Int): Int {
+        if (position <= 0) return 0
         var start = position - 1
         while (start >= 0 && isWordChar(text[start])) {
             start--
         }
-        return start + 1
+        return (start + 1).coerceIn(0, text.length)
     }
 
     private fun isWordChar(c: Char): Boolean {
@@ -152,11 +153,14 @@ class AutoCompleteHelper(
             editText.getLocationOnScreen(location)
             
             val screenWidth = context.resources.displayMetrics.widthPixels
+            val screenHeight = context.resources.displayMetrics.heightPixels
             
             // Динамический расчёт ширины popup
             val popupWidth = (screenWidth * 0.6).toInt().coerceIn(200, 350)
+            val popupHeight = (context.resources.displayMetrics.density * 200).toInt() // Оценочная высота
+            
             var popupX = cursorX + editText.paddingLeft
-            val popupY = lineBottom - editText.scrollY + editText.paddingTop
+            var popupY = lineBottom - editText.scrollY + editText.paddingTop
             
             // Проверяем выход за правый край экрана
             if (location[0] + popupX + popupWidth > screenWidth) {
@@ -167,8 +171,16 @@ class AutoCompleteHelper(
                 popupX = -location[0] + 16
             }
             
+            // Проверяем наличие места внизу
+            val absoluteY = location[1] + popupY
+            if (absoluteY + popupHeight > screenHeight) {
+                // Показываем сверху если снизу нет места
+                popupY -= popupHeight + layout.getLineBottom(line) - layout.getLineTop(line) + 16
+            }
+            
             if (editText.isAttachedToWindow && editText.windowToken != null) {
                 popupWindow?.width = popupWidth
+                popupWindow?.height = WindowManager.LayoutParams.WRAP_CONTENT
                 popupWindow?.showAsDropDown(editText, popupX, popupY - editText.height)
             }
         } catch (e: Exception) {
@@ -179,18 +191,33 @@ class AutoCompleteHelper(
     private fun insertSuggestion(suggestion: Suggestion) {
         val text = editText.text ?: return
         val cursorPos = editText.selectionStart
+        if (cursorPos < 0) return
         
-        text.replace(wordStart, cursorPos, suggestion.template)
-        
-        val parenIndex = suggestion.template.indexOf('(')
-        if (parenIndex >= 0) {
-            val newCursorPos = wordStart + parenIndex + 1
-            editText.setSelection(newCursorPos)
+        try {
+            text.replace(wordStart, cursorPos, suggestion.template)
+            
+            val parenIndex = suggestion.template.indexOf('(')
+            if (parenIndex >= 0) {
+                val newCursorPos = wordStart + parenIndex + 1
+                if (newCursorPos <= text.length) {
+                    editText.setSelection(newCursorPos)
+                }
+            }
+        } catch (e: Exception) {
+            com.autoclicker.app.util.CrashHandler.logError("AutoComplete", "Failed to insert suggestion", e)
         }
     }
 
+    fun cleanup() {
+        dismiss()
+    }
+
     fun dismiss() {
-        popupWindow?.dismiss()
+        try {
+            popupWindow?.dismiss()
+        } catch (e: Exception) {
+            // ignore
+        }
         popupWindow = null
     }
 

@@ -54,17 +54,17 @@ object Constants {
     /** Notification ID for Floating Window service */
     const val NOTIFICATION_ID_FLOATING_WINDOW = 1002
     
-    /** Notification ID for Macro Recorder service */
-    const val NOTIFICATION_ID_MACRO_RECORDER = 1003
-    
     /** Notification ID for Color Picker service */
-    const val NOTIFICATION_ID_COLOR_PICKER = 1004
+    const val NOTIFICATION_ID_COLOR_PICKER = 1003
+    
+    /** Notification ID for Macro Recorder service */
+    const val NOTIFICATION_ID_MACRO_RECORDER = 1005
     
     /** Notification ID for Coordinate Overlay service */
-    const val NOTIFICATION_ID_COORDINATE_OVERLAY = 1005
+    const val NOTIFICATION_ID_COORDINATE_OVERLAY = 1006
     
     /** Notification ID for Backup/Restore operations */
-    const val NOTIFICATION_ID_BACKUP_RESTORE = 1006
+    const val NOTIFICATION_ID_BACKUP_RESTORE = 1007
     
     // ========================================
     // LOGGING & DEBUGGING
@@ -90,6 +90,12 @@ object Constants {
     
     /** Time format pattern for crash reports */
     const val CRASH_REPORT_DATE_PATTERN = "dd.MM.yyyy HH:mm:ss"
+
+    /** Log retention period (in days) */
+    const val LOG_RETENTION_DAYS = 7
+
+    /** Maximum log file size (in bytes) before rotation */
+    const val MAX_LOG_FILE_SIZE = 10 * 1024 * 1024L // 10MB
     
     // ========================================
     // UI & USER EXPERIENCE
@@ -112,6 +118,31 @@ object Constants {
     
     /** Default accent color (Material Orange) */
     val DEFAULT_ACCENT_COLOR = 0xFFFF5722.toInt()
+
+    /** Maximum color history size */
+    const val MAX_HISTORY_COLOR = 6
+    
+    // ========================================
+    // SCRIPT EDITOR & HIGHLIGHTING
+    // ========================================
+
+    /** Maximum text length for syntax highlighting (chars) */
+    const val MAX_TEXT_FOR_HIGHLIGHT_CHARS = 15000
+
+    /** Delay for syntax highlighting (milliseconds) */
+    const val HIGHLIGHT_DELAY_MS = 150L
+
+    /** Maximum quick actions allowed */
+    const val MAX_QUICK_ACTIONS = 50
+
+    /** Maximum macro actions allowed in a single recording */
+    const val MAX_MACRO_ACTIONS = 1000
+
+    /** Maximum delay between macro actions (milliseconds) */
+    const val MAX_DELAY_MS = 60000L
+
+    /** Threshold for long delay alert in macro recorder (milliseconds) */
+    const val MAX_DELAY_ALERT_MS = 30000L
     
     // ========================================
     // SCRIPT EXECUTION
@@ -126,6 +157,16 @@ object Constants {
     /** Coroutine supervisor timeout (in milliseconds) */
     const val COROUTINE_SUPERVISOR_TIMEOUT_MS = 5000L
     
+    // ========================================
+    // PREFERENCE KEYS
+    // ========================================
+
+    const val PREFS_COLOR_HISTORY_KEY = "color_picker_history"
+    const val PREFS_KEY_HISTORY = "history"
+    const val QUICK_ACTIONS_KEY = "quick_actions"
+    const val PREFS_KEY_ACTIONS = "actions"
+    const val PREFS_KEY_QUICK_ACTIONS_BACKUP = "actions_backup"
+
     // ========================================
     // BACKUP & RECOVERY
     // ========================================

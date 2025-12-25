@@ -45,6 +45,7 @@ class ScriptListActivity : BaseActivity() {
     private var allScripts = listOf<ScriptStorage.Script>()
     private var currentSortMode = SortMode.DATE_DESC
     private var isSearchVisible = false
+    private var textWatcher: TextWatcher? = null
 
     // Для импорта файла
     private val importFileLauncher = registerForActivityResult(
@@ -52,13 +53,19 @@ class ScriptListActivity : BaseActivity() {
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             result.data?.data?.let { uri ->
-                val script = exporter.importScript(uri)
-                if (script != null) {
-                    storage.saveScript(script)
-                    loadScripts()
-                    Toast.makeText(this, "Скрипт '${script.name}' импортирован", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "Ошибка импорта", Toast.LENGTH_SHORT).show()
+                try {
+                    val script = exporter.importScript(uri)
+                    if (script != null) {
+                        storage.saveScript(script)
+                        loadScripts()
+                        Toast.makeText(this, "Скрипт '${script.name}' импортирован", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "Не удалось распознать файл скрипта", Toast.LENGTH_LONG).show()
+                        com.autoclicker.app.util.CrashHandler.logWarning("ScriptList", "Import failed for uri: $uri")
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(this, "Ошибка импорта: ${e.message}", Toast.LENGTH_LONG).show()
+                    com.autoclicker.app.util.CrashHandler.logError("ScriptList", "Import exception", e)
                 }
             }
         }
@@ -126,13 +133,20 @@ class ScriptListActivity : BaseActivity() {
         }
 
         // Поиск по тексту
-        etSearch.addTextChangedListener(object : TextWatcher {
+        textWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 filterScripts(s?.toString() ?: "")
             }
-        })
+        }
+        etSearch.addTextChangedListener(textWatcher)
+    }
+
+    override fun onDestroy() {
+        textWatcher?.let { etSearch.removeTextChangedListener(it) }
+        textWatcher = null
+        super.onDestroy()
     }
 
     private fun setupSwipeToDelete() {

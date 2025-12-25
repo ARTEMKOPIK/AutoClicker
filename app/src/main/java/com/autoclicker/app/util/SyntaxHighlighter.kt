@@ -10,19 +10,21 @@ import android.text.style.ForegroundColorSpan
 import android.widget.EditText
 import java.util.regex.Pattern
 
+import androidx.core.content.ContextCompat
+import com.autoclicker.app.R
+
 /**
  * Подсветка синтаксиса для редактора скриптов
  */
 class SyntaxHighlighter(private val editText: EditText) : TextWatcher {
 
-    companion object {
-        // Цвета для подсветки
-        private val COLOR_KEYWORD = Color.parseColor("#FF9800")    // Оранжевый - ключевые слова
-        private val COLOR_FUNCTION = Color.parseColor("#4CAF50")   // Зелёный - функции
-        private val COLOR_STRING = Color.parseColor("#8BC34A")     // Светло-зелёный - строки
-        private val COLOR_NUMBER = Color.parseColor("#03A9F4")     // Голубой - числа
-        private val COLOR_COMMENT = Color.parseColor("#757575")    // Серый - комментарии
+    private val colorKeyword: Int by lazy { ContextCompat.getColor(editText.context, R.color.syntax_keyword) }
+    private val colorFunction: Int by lazy { ContextCompat.getColor(editText.context, R.color.syntax_function) }
+    private val colorString: Int by lazy { ContextCompat.getColor(editText.context, R.color.syntax_string) }
+    private val colorNumber: Int by lazy { ContextCompat.getColor(editText.context, R.color.syntax_number) }
+    private val colorComment: Int by lazy { ContextCompat.getColor(editText.context, R.color.syntax_comment) }
 
+    companion object {
         // Паттерны (компилируются один раз)
         private val PATTERN_KEYWORDS = Pattern.compile(
             "\\b(while|if|else|val|var|true|false|EXIT|return|break|continue|fun)\\b"
@@ -35,9 +37,6 @@ class SyntaxHighlighter(private val editText: EditText) : TextWatcher {
         private val PATTERN_STRINGS = Pattern.compile("\"[^\"]*\"|'[^']*'")
         private val PATTERN_NUMBERS = Pattern.compile("\\b\\d+\\.?\\d*\\b")
         private val PATTERN_COMMENTS = Pattern.compile("//.*")
-        
-        private const val HIGHLIGHT_DELAY_MS = 150L
-        private const val MAX_TEXT_LENGTH_FOR_HIGHLIGHT = 15000
     }
 
     private var isHighlighting = false
@@ -54,7 +53,7 @@ class SyntaxHighlighter(private val editText: EditText) : TextWatcher {
                 highlight(editable)
                 lastHighlightedText = currentText
             } catch (e: Exception) {
-                // Игнорируем ошибки при подсветке
+                CrashHandler.logWarning("SyntaxHighlighter", "Error highlighting text", e)
             }
             isHighlighting = false
         }
@@ -69,15 +68,16 @@ class SyntaxHighlighter(private val editText: EditText) : TextWatcher {
         
         // Debounce - откладываем подсветку чтобы не тормозить при быстром вводе
         handler.removeCallbacks(highlightRunnable)
-        handler.postDelayed(highlightRunnable, HIGHLIGHT_DELAY_MS)
+        handler.postDelayed(highlightRunnable, Constants.HIGHLIGHT_DELAY_MS)
     }
 
     private fun highlight(editable: Editable) {
         if (editable.isEmpty()) return
         
         val text = editable.toString()
-        if (text.length > MAX_TEXT_LENGTH_FOR_HIGHLIGHT) {
+        if (text.length > Constants.MAX_TEXT_FOR_HIGHLIGHT_CHARS) {
             // Пропускаем подсветку для очень больших текстов
+            CrashHandler.logDebug("SyntaxHighlighter", "Text too large (${text.length} chars), skipping highlight")
             return
         }
         
@@ -88,12 +88,12 @@ class SyntaxHighlighter(private val editText: EditText) : TextWatcher {
         }
 
         // Применяем подсветку в порядке приоритета (последние перекрывают предыдущие)
-        applyPattern(editable, PATTERN_NUMBERS, COLOR_NUMBER)
-        applyPattern(editable, PATTERN_KEYWORDS, COLOR_KEYWORD)
-        applyPattern(editable, PATTERN_FUNCTIONS, COLOR_FUNCTION)
+        applyPattern(editable, PATTERN_NUMBERS, colorNumber)
+        applyPattern(editable, PATTERN_KEYWORDS, colorKeyword)
+        applyPattern(editable, PATTERN_FUNCTIONS, colorFunction)
         // Строки и комментарии должны перекрывать всё остальное
-        applyPatternExclusive(editable, PATTERN_STRINGS, COLOR_STRING)
-        applyPatternExclusive(editable, PATTERN_COMMENTS, COLOR_COMMENT)
+        applyPatternExclusive(editable, PATTERN_STRINGS, colorString)
+        applyPatternExclusive(editable, PATTERN_COMMENTS, colorComment)
     }
 
     private fun applyPatternExclusive(editable: Editable, pattern: Pattern, color: Int) {
@@ -145,6 +145,11 @@ class SyntaxHighlighter(private val editText: EditText) : TextWatcher {
             }
             isHighlighting = false
         }
+    }
+
+    fun cleanup() {
+        handler.removeCallbacks(highlightRunnable)
+        detach()
     }
 
     fun detach() {

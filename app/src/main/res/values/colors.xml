@@ -58,4 +58,11 @@
     <color name="divider">#FFFFFF10</color>
     <color name="border">#FFFFFF15</color>
     <color name="border_focus">#8B5CF680</color>
+
+    <!-- Syntax Highlighting -->
+    <color name="syntax_keyword">#FF9800</color>
+    <color name="syntax_function">#4CAF50</color>
+    <color name="syntax_string">#8BC34A</color>
+    <color name="syntax_number">#03A9F4</color>
+    <color name="syntax_comment">#757575</color>
 </resources>

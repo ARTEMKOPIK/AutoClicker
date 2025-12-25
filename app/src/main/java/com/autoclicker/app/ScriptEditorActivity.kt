@@ -487,6 +487,13 @@ log("Скрипт завершён")"""
         updateUndoRedoButtons()
     }
 
+    override fun onDestroy() {
+        autoSaveHandler.removeCallbacksAndMessages(null)
+        autoCompleteHelper.cleanup()
+        syntaxHighlighter.cleanup()
+        super.onDestroy()
+    }
+
     private fun saveScript(silent: Boolean = false) {
         val name = etName.text.toString().ifEmpty { "Без названия" }
         val code = etCode.text.toString()
