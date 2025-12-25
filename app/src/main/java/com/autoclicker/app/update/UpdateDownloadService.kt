@@ -308,7 +308,6 @@ class UpdateDownloadService : Service() {
                         "Failed to parse file path from URI: $filePath",
                         null
                     )
-                    showNotification("Ошибка", "Не удалось получить путь к файлу обновления", false)
                     return
                 }
                 File(path)
