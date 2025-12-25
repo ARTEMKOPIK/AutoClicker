@@ -173,73 +173,66 @@ class UpdateManager(private val context: Context) {
     }
     
     /**
-     * Скачивает обновление
+     * Скачивает обновление через Foreground Service для надёжности
      */
     fun downloadUpdate(updateInfo: UpdateInfo, listener: (UpdateDownloadState) -> Unit) {
         downloadStateListener = listener
-        listener(UpdateDownloadState.Idle)
         
         try {
-            // Удаляем старые APK
-            cleanOldApks()
+            // Регистрируем receiver для получения обновлений от Service
+            registerServiceReceiver()
             
-            val fileName = "AutoClicker-${updateInfo.versionName}.apk"
-            val request = DownloadManager.Request(Uri.parse(updateInfo.downloadUrl))
-                .setTitle("Обновление AutoClicker")
-                .setDescription("Загрузка версии ${updateInfo.versionName}")
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-                .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, fileName)
-                .setAllowedOverMetered(true)
-                .setAllowedOverRoaming(true)
+            // Запускаем Foreground Service для загрузки
+            UpdateDownloadService.startDownload(context, updateInfo)
             
-            val downloadId = downloadManager.enqueue(request)
-            prefs.edit().putLong(KEY_DOWNLOAD_ID, downloadId).apply()
-            
-            // Регистрируем receiver для отслеживания завершения
-            registerDownloadReceiver(downloadId, updateInfo.versionName)
-            
-            // Запускаем отслеживание прогресса
-            startProgressTracking(downloadId, updateInfo.fileSize)
+            // Сообщаем, что загрузка начата
+            listener(UpdateDownloadState.Idle)
             
         } catch (e: Exception) {
-            listener(UpdateDownloadState.Error("Ошибка загрузки: ${e.message}"))
+            listener(UpdateDownloadState.Error("Ошибка запуска загрузки: ${e.message}"))
         }
     }
     
-    private fun registerDownloadReceiver(downloadId: Long, versionName: String) {
+    /**
+     * Регистрирует BroadcastReceiver для получения обновлений от Service
+     */
+    private fun registerServiceReceiver() {
         downloadReceiver?.let {
             try { context.unregisterReceiver(it) } catch (_: Exception) {}
         }
         
         downloadReceiver = object : BroadcastReceiver() {
             override fun onReceive(ctx: Context?, intent: Intent?) {
-                val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1) ?: return
-                if (id != downloadId) return
-                
-                progressJob?.cancel()
-                
-                val query = DownloadManager.Query().setFilterById(downloadId)
-                val cursor = downloadManager.query(query)
-                
-                if (cursor.moveToFirst()) {
-                    val status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
+                when (intent?.action) {
+                    UpdateDownloadService.BROADCAST_DOWNLOAD_PROGRESS -> {
+                        val progress = intent.getIntExtra(UpdateDownloadService.EXTRA_PROGRESS, 0)
+                        val downloaded = intent.getLongExtra(UpdateDownloadService.EXTRA_DOWNLOADED, 0)
+                        val total = intent.getLongExtra(UpdateDownloadService.EXTRA_TOTAL, 0)
+                        downloadStateListener?.invoke(
+                            UpdateDownloadState.Downloading(progress, downloaded, total)
+                        )
+                    }
                     
-                    when (status) {
-                        DownloadManager.STATUS_SUCCESSFUL -> {
-                            val uri = cursor.getString(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_URI))
-                            downloadStateListener?.invoke(UpdateDownloadState.Downloaded(uri))
-                        }
-                        DownloadManager.STATUS_FAILED -> {
-                            val reason = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON))
-                            downloadStateListener?.invoke(UpdateDownloadState.Error("Ошибка загрузки: $reason"))
-                        }
+                    UpdateDownloadService.BROADCAST_DOWNLOAD_COMPLETED -> {
+                        val filePath = intent.getStringExtra(UpdateDownloadService.EXTRA_FILE_PATH) ?: ""
+                        downloadStateListener?.invoke(UpdateDownloadState.Downloaded(filePath))
+                        // Можно автоматически не отменять receiver, если нужно отслеживать повторные загрузки
+                    }
+                    
+                    UpdateDownloadService.BROADCAST_DOWNLOAD_FAILED -> {
+                        val error = intent.getStringExtra(UpdateDownloadService.EXTRA_ERROR) ?: "Неизвестная ошибка"
+                        downloadStateListener?.invoke(UpdateDownloadState.Error(error))
                     }
                 }
-                cursor.close()
             }
         }
         
-        val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+        val filter = IntentFilter().apply {
+            addAction(UpdateDownloadService.BROADCAST_DOWNLOAD_PROGRESS)
+            addAction(UpdateDownloadService.BROADCAST_DOWNLOAD_COMPLETED)
+            addAction(UpdateDownloadService.BROADCAST_DOWNLOAD_FAILED)
+        }
+        
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             context.registerReceiver(downloadReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
         } else {
@@ -247,32 +240,11 @@ class UpdateManager(private val context: Context) {
         }
     }
     
-    private fun startProgressTracking(downloadId: Long, totalSize: Long) {
-        progressJob?.cancel()
-        progressJob = CoroutineScope(Dispatchers.IO).launch {
-            while (isActive) {
-                val query = DownloadManager.Query().setFilterById(downloadId)
-                val cursor = downloadManager.query(query)
-                
-                if (cursor.moveToFirst()) {
-                    val status = cursor.getInt(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS))
-                    
-                    if (status == DownloadManager.STATUS_RUNNING) {
-                        val downloaded = cursor.getLong(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
-                        val total = cursor.getLong(cursor.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
-                        val actualTotal = if (total > 0) total else totalSize
-                        val progress = if (actualTotal > 0) ((downloaded * 100) / actualTotal).toInt() else 0
-                        
-                        withContext(Dispatchers.Main) {
-                            downloadStateListener?.invoke(UpdateDownloadState.Downloading(progress, downloaded, actualTotal))
-                        }
-                    }
-                }
-                cursor.close()
-                
-                delay(200)
-            }
-        }
+    /**
+     * Отменяет загрузку
+     */
+    fun cancelDownload() {
+        UpdateDownloadService.cancelDownload(context)
     }
     
     /**
@@ -348,3 +320,4 @@ class UpdateManager(private val context: Context) {
         downloadStateListener = null
     }
 }
+

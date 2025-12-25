@@ -110,6 +110,16 @@
                 android:value="overlay" />
         </service>
 
+        <!-- Сервис загрузки обновлений -->
+        <service
+            android:name=".update.UpdateDownloadService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="download" />
+        </service>
+
         <!-- Виджет с выбором скрипта -->
         <receiver
             android:name=".widget.ScriptWidget"
