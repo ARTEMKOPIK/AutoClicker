@@ -110,7 +110,7 @@ object ExportImportManager {
             
             // Проверяем коллизию ID
             val storage = ScriptStorage(context)
-            val existingScripts = storage.loadScripts()
+            val existingScripts = storage.getAllScripts()
             val hasIdCollision = existingScripts.any { it.id == script.id }
             
             if (hasIdCollision) {
@@ -168,7 +168,7 @@ object ExportImportManager {
         return try {
             val scripts = gson.fromJson(json, Array<ScriptStorage.Script>::class.java).toList()
             val storage = ScriptStorage(context)
-            val existingScripts = storage.loadScripts()
+            val existingScripts = storage.getAllScripts()
             val existingIds = existingScripts.map { it.id }.toSet()
             
             scripts.mapNotNull { script ->
