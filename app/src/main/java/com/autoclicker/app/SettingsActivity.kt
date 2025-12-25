@@ -120,13 +120,23 @@ class SettingsActivity : BaseActivity() {
             spinner.setSelection(currentIndex)
         }
         
+        // Флаг для игнорирования первого срабатывания при инициализации
+        var isInitialSelection = true
+        
         // Обработчик выбора темы
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // Игнорируем первое срабатывание при установке начальной позиции
+                if (isInitialSelection) {
+                    isInitialSelection = false
+                    return
+                }
+                
                 val selectedTheme = themes[position].first
+                val currentSavedTheme = ThemeManager.getThemeMode(this@SettingsActivity)
                 
                 // Проверяем, изменилась ли тема
-                if (selectedTheme != currentTheme) {
+                if (selectedTheme != currentSavedTheme) {
                     ThemeManager.setThemeMode(this@SettingsActivity, selectedTheme)
                     
                     // Перезапускаем активити для применения темы

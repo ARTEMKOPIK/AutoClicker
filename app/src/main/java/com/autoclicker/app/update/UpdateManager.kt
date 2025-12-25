@@ -185,8 +185,8 @@ class UpdateManager(private val context: Context) {
             // Запускаем Foreground Service для загрузки
             UpdateDownloadService.startDownload(context, updateInfo)
             
-            // Сообщаем, что загрузка начата
-            listener(UpdateDownloadState.Idle)
+            // Сообщаем, что загрузка начата (0% прогресс, но загрузка активна)
+            listener(UpdateDownloadState.Downloading(0, 0, updateInfo.fileSize))
             
         } catch (e: Exception) {
             listener(UpdateDownloadState.Error("Ошибка запуска загрузки: ${e.message}"))
