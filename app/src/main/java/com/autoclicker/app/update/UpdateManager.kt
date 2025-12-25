@@ -253,12 +253,27 @@ class UpdateManager(private val context: Context) {
     fun installUpdate(filePath: String) {
         try {
             val file = if (filePath.startsWith("file://")) {
-                File(Uri.parse(filePath).path!!)
+                val uri = Uri.parse(filePath)
+                val path = uri.path
+                if (path == null) {
+                    com.autoclicker.app.util.CrashHandler.logError(
+                        "UpdateManager",
+                        "Failed to parse file path from URI: $filePath",
+                        null
+                    )
+                    downloadStateListener?.invoke(UpdateDownloadState.Error("Не удалось получить путь к файлу обновления"))
+                    return
+                }
+                File(path)
             } else {
                 File(filePath)
             }
             
             if (!file.exists()) {
+                com.autoclicker.app.util.CrashHandler.logWarning(
+                    "UpdateManager",
+                    "Update file does not exist: ${file.absolutePath}"
+                )
                 downloadStateListener?.invoke(UpdateDownloadState.Error("Файл не найден"))
                 return
             }
@@ -320,4 +335,3 @@ class UpdateManager(private val context: Context) {
         downloadStateListener = null
     }
 }
-

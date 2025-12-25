@@ -256,7 +256,16 @@ class CodeEditor @JvmOverloads constructor(
             }
 
             val text = text?.toString() ?: return
-            val matcher = searchPattern!!.matcher(text)
+            val pattern = searchPattern
+            if (pattern == null) {
+                com.autoclicker.app.util.CrashHandler.logWarning(
+                    "CodeEditor",
+                    "Search pattern is null after initialization"
+                )
+                searchListener?.onSearchResults(0, 0)
+                return
+            }
+            val matcher = pattern.matcher(text)
 
             while (matcher.find()) {
                 searchMatches.add(matcher.start() until matcher.end())

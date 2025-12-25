@@ -58,9 +58,18 @@ class ScriptEditorActivity : BaseActivity() {
     private val screenCaptureLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            ScreenCaptureService.startService(this, result.resultCode, result.data!!)
-            tryStartPanel()
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            if (data != null) {
+                ScreenCaptureService.startService(this, result.resultCode, data)
+                tryStartPanel()
+            } else {
+                com.autoclicker.app.util.CrashHandler.logWarning(
+                    "ScriptEditorActivity",
+                    "Screen capture result data is null"
+                )
+                Toast.makeText(this, "Не удалось получить разрешение на захват экрана", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
