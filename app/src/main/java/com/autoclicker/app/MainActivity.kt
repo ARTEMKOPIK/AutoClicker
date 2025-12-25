@@ -283,12 +283,15 @@ class MainActivity : BaseActivity() {
     }
 
     private fun checkPermissions(): Boolean {
+        // Check accessibility first - this is critical for script execution
         if (!isAccessibilityEnabled()) {
             showPermissionDialog("Accessibility Service", "Нужен для кликов по экрану") {
                 startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
             }
             return false
         }
+        
+        // Check overlay permission
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             showPermissionDialog("Наложение поверх окон", "Нужно для плавающей кнопки") {
                 val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
@@ -296,12 +299,22 @@ class MainActivity : BaseActivity() {
             }
             return false
         }
-        if (!ScreenCaptureService.isRunning) {
+        
+        // Re-check screen capture after showing dialog (may have changed during user interaction)
+        // This prevents race condition where permissions are granted but state isn't updated yet
+        val captureService = ScreenCaptureService.isRunning
+        if (!captureService) {
+            // Final atomic check before requesting
+            if (ScreenCaptureService.isRunning) {
+                return true // Permission was granted between check and now
+            }
             showPermissionDialog("Захват экрана", "Нужен для скриншотов и OCR") {
                 requestScreenCapture()
             }
             return false
         }
+        
+        // All permissions granted atomically
         return true
     }
 

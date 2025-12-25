@@ -1,11 +1,13 @@
 package com.autoclicker.app.visual
 
 import android.content.Context
+import com.autoclicker.app.util.CrashHandler
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 /**
- * Хранилище визуальных скриптов
+ * Хранилище визуальных скриптов.
+ * Thread-safety: All operations are synchronized using a lock object.
  */
 class VisualScriptStorage private constructor(context: Context) {
 
@@ -39,7 +41,7 @@ class VisualScriptStorage private constructor(context: Context) {
                 val json = gson.toJson(scripts)
                 prefs.edit().putString("scripts_list", json).apply()
             } catch (e: Exception) {
-                android.util.Log.e("VisualScriptStorage", "Error saving script", e)
+                CrashHandler.logError("VisualScriptStorage", "Error saving script", e)
             }
         }
     }
@@ -62,7 +64,7 @@ class VisualScriptStorage private constructor(context: Context) {
             val type = object : TypeToken<List<VisualScript>>() {}.type
             gson.fromJson<List<VisualScript>>(json, type) ?: emptyList()
         } catch (e: Exception) {
-            android.util.Log.e("VisualScriptStorage", "Error loading scripts", e)
+            CrashHandler.logError("VisualScriptStorage", "Error loading scripts", e)
             emptyList()
         }
     }
@@ -74,7 +76,7 @@ class VisualScriptStorage private constructor(context: Context) {
                 val json = gson.toJson(scripts)
                 prefs.edit().putString("scripts_list", json).apply()
             } catch (e: Exception) {
-                android.util.Log.e("VisualScriptStorage", "Error deleting script", e)
+                CrashHandler.logError("VisualScriptStorage", "Error deleting script", e)
             }
         }
     }

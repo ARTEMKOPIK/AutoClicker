@@ -152,7 +152,7 @@ class ColorPickerService : Service() {
             colorHistory.clear()
             colorHistory.addAll(entries.take(MAX_HISTORY))
         } catch (e: Exception) {
-            android.util.Log.e("ColorPickerService", "Error loading color history", e)
+            CrashHandler.logError("ColorPickerService", "Error loading color history", e)
         }
     }
     
@@ -162,7 +162,7 @@ class ColorPickerService : Service() {
             val historyJson = colorHistory.joinToString(";") { "${it.color},${it.x},${it.y}" }
             prefs.edit().putString(KEY_HISTORY, historyJson).apply()
         } catch (e: Exception) {
-            android.util.Log.e("ColorPickerService", "Error saving color history", e)
+            CrashHandler.logError("ColorPickerService", "Error saving color history", e)
         }
     }
 
