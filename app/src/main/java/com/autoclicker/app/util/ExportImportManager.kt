@@ -2,7 +2,6 @@ package com.autoclicker.app.util
 
 import android.content.Context
 import android.net.Uri
-import com.autoclicker.app.models.Script
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import java.io.BufferedReader
@@ -60,7 +59,7 @@ object ExportImportManager {
      * @param script Скрипт для экспорта
      * @return JSON строка или null при ошибке
      */
-    fun exportScriptToJson(script: Script): String? {
+    fun exportScriptToJson(script: ScriptStorage.Script): String? {
         return try {
             gson.toJson(script)
         } catch (e: Exception) {
@@ -75,7 +74,7 @@ object ExportImportManager {
      * @param scripts Список скриптов для экспорта
      * @return JSON строка с массивом или null при ошибке
      */
-    fun exportAllScriptsToJson(scripts: List<Script>): String? {
+    fun exportAllScriptsToJson(scripts: List<ScriptStorage.Script>): String? {
         return try {
             gson.toJson(scripts)
         } catch (e: Exception) {
@@ -94,9 +93,9 @@ object ExportImportManager {
      * @param context Контекст для проверки коллизий ID
      * @return Импортированный скрипт или null при ошибке
      */
-    fun importScriptFromJson(json: String, context: Context): Script? {
+    fun importScriptFromJson(json: String, context: Context): ScriptStorage.Script? {
         return try {
-            val script = gson.fromJson(json, Script::class.java)
+            val script = gson.fromJson(json, ScriptStorage.Script::class.java)
             
             // Проверяем базовые поля
             if (script.name.isBlank()) {
@@ -110,7 +109,8 @@ object ExportImportManager {
             }
             
             // Проверяем коллизию ID
-            val existingScripts = ScriptStorage.loadScripts(context)
+            val storage = ScriptStorage(context)
+            val existingScripts = storage.loadScripts()
             val hasIdCollision = existingScripts.any { it.id == script.id }
             
             if (hasIdCollision) {
@@ -139,7 +139,7 @@ object ExportImportManager {
      * @param uri URI файла (получен из ACTION_OPEN_DOCUMENT)
      * @return Импортированный скрипт или null при ошибке
      */
-    fun importScriptFromUri(context: Context, uri: Uri): Script? {
+    fun importScriptFromUri(context: Context, uri: Uri): ScriptStorage.Script? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri)
                 ?: run {
@@ -164,10 +164,11 @@ object ExportImportManager {
      * @param context Контекст для проверки коллизий ID
      * @return Список импортированных скриптов (может быть пустым)
      */
-    fun importAllScriptsFromJson(json: String, context: Context): List<Script> {
+    fun importAllScriptsFromJson(json: String, context: Context): List<ScriptStorage.Script> {
         return try {
-            val scripts = gson.fromJson(json, Array<Script>::class.java).toList()
-            val existingScripts = ScriptStorage.loadScripts(context)
+            val scripts = gson.fromJson(json, Array<ScriptStorage.Script>::class.java).toList()
+            val storage = ScriptStorage(context)
+            val existingScripts = storage.loadScripts()
             val existingIds = existingScripts.map { it.id }.toSet()
             
             scripts.mapNotNull { script ->
@@ -240,4 +241,3 @@ object ExportImportManager {
         }
     }
 }
-
