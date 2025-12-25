@@ -15,19 +15,25 @@ class FileLogger(private val context: Context) {
     private val fileDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private val lock = Any()
 
-    private val logDir: File
-        get() = File(context.filesDir, "logs").also { it.mkdirs() }
+    private val logDir: File?
+        get() = context.filesDir?.let { File(it, "logs").also { dir -> dir.mkdirs() } }
 
-    private val currentLogFile: File
-        get() = File(logDir, "log_${fileDateFormat.format(Date())}.txt")
+    private val currentLogFile: File?
+        get() = logDir?.let { File(it, "log_${fileDateFormat.format(Date())}.txt") }
 
     fun log(tag: String, message: String) {
         synchronized(lock) {
+            val logFile = currentLogFile ?: return
             try {
+                // Проверка размера файла перед записью
+                if (logFile.exists() && logFile.length() > Constants.MAX_LOG_FILE_SIZE) {
+                    rotateLogFile(logFile)
+                }
+
                 val timestamp = dateFormat.format(Date())
                 val logLine = "[$timestamp] [$tag] $message\n"
 
-                FileWriter(currentLogFile, true).use { writer ->
+                FileWriter(logFile, true).use { writer ->
                     writer.write(logLine)
                 }
 
@@ -39,10 +45,21 @@ class FileLogger(private val context: Context) {
         }
     }
 
+    private fun rotateLogFile(file: File) {
+        try {
+            val backupFile = File(file.absolutePath + ".old")
+            if (backupFile.exists()) backupFile.delete()
+            file.renameTo(backupFile)
+        } catch (e: Exception) {
+            android.util.Log.e("FileLogger", "Error rotating log file", e)
+        }
+    }
+
     fun getLogContent(): String {
         return try {
-            if (currentLogFile.exists()) {
-                currentLogFile.readText()
+            val logFile = currentLogFile
+            if (logFile != null && logFile.exists()) {
+                logFile.readText()
             } else {
                 "Логи пусты"
             }
@@ -54,7 +71,7 @@ class FileLogger(private val context: Context) {
     fun getAllLogs(): String {
         val builder = StringBuilder()
         try {
-            logDir.listFiles()
+            logDir?.listFiles()
                 ?.sortedByDescending { it.name }
                 ?.take(3) // Последние 3 дня
                 ?.forEach { file ->
@@ -71,7 +88,7 @@ class FileLogger(private val context: Context) {
     fun clearLogs() {
         synchronized(lock) {
             try {
-                logDir.listFiles()?.forEach { it.delete() }
+                logDir?.listFiles()?.forEach { it.delete() }
             } catch (e: Exception) {
                 android.util.Log.e("FileLogger", "Error clearing logs", e)
             }
@@ -80,8 +97,8 @@ class FileLogger(private val context: Context) {
 
     private fun cleanOldLogs() {
         try {
-            val cutoffTime = System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L // 7 дней
-            logDir.listFiles()?.forEach { file ->
+            val cutoffTime = System.currentTimeMillis() - Constants.LOG_RETENTION_DAYS * 24 * 60 * 60 * 1000L
+            logDir?.listFiles()?.forEach { file ->
                 if (file.lastModified() < cutoffTime) {
                     file.delete()
                 }

@@ -51,7 +51,7 @@ class CoordinateOverlayService : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        startForeground(NOTIFICATION_ID, createNotification())
+        startForeground(com.autoclicker.app.util.Constants.NOTIFICATION_ID_COORDINATE_OVERLAY, createNotification())
         setupOverlay()
     }
 

@@ -18,6 +18,7 @@ class VariablesActivity : BaseActivity() {
     private lateinit var rvVariables: RecyclerView
     private lateinit var tvEmpty: TextView
     private lateinit var adapter: VariablesAdapter
+    private var activeDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +27,12 @@ class VariablesActivity : BaseActivity() {
         ScriptVariables.init(this)
         initViews()
         loadVariables()
+    }
+
+    override fun onDestroy() {
+        activeDialog?.dismiss()
+        activeDialog = null
+        super.onDestroy()
     }
 
     private fun initViews() {
@@ -39,7 +46,7 @@ class VariablesActivity : BaseActivity() {
         }
 
         findViewById<ImageView>(R.id.btnClear).setOnClickListener {
-            AlertDialog.Builder(this)
+            activeDialog = AlertDialog.Builder(this)
                 .setTitle("Очистить все?")
                 .setMessage("Все переменные будут удалены")
                 .setPositiveButton("Очистить") { _, _ ->
@@ -73,7 +80,7 @@ class VariablesActivity : BaseActivity() {
         val etKey = dialogView.findViewById<EditText>(R.id.etKey)
         val etValue = dialogView.findViewById<EditText>(R.id.etValue)
 
-        AlertDialog.Builder(this)
+        activeDialog = AlertDialog.Builder(this)
             .setTitle("Новая переменная")
             .setView(dialogView)
             .setPositiveButton("Добавить") { _, _ ->
@@ -97,7 +104,7 @@ class VariablesActivity : BaseActivity() {
         etKey.isEnabled = false
         etValue.setText(currentValue.toString())
 
-        AlertDialog.Builder(this)
+        activeDialog = AlertDialog.Builder(this)
             .setTitle("Редактировать")
             .setView(dialogView)
             .setPositiveButton("Сохранить") { _, _ ->

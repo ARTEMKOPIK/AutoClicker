@@ -24,6 +24,8 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.autoclicker.app.R
 
+import java.util.concurrent.CopyOnWriteArrayList
+
 /**
  * Сервис для записи макросов (действий пользователя)
  */
@@ -31,12 +33,12 @@ class MacroRecorderService : Service() {
 
     companion object {
         private const val CHANNEL_ID = "macro_recorder_channel"
-        private const val NOTIFICATION_ID = 1005
 
+        @Volatile
         var isRecording = false
             private set
 
-        var recordedActions: List<RecordedAction> = emptyList()
+        var recordedActions: List<RecordedAction> = CopyOnWriteArrayList()
             private set
 
         fun startService(context: Context) {
@@ -53,7 +55,8 @@ class MacroRecorderService : Service() {
         }
 
         fun generateScript(): String {
-            if (recordedActions.isEmpty()) return ""
+            val currentActions = recordedActions
+            if (currentActions.isEmpty()) return ""
 
             val builder = StringBuilder()
             builder.appendLine("// Записанный макрос")
@@ -62,10 +65,15 @@ class MacroRecorderService : Service() {
             builder.appendLine("log(\"Макрос запущен\")")
             builder.appendLine()
 
-            var lastTime = recordedActions.first().timestamp
+            var lastTime = currentActions.first().timestamp
 
-            for (action in recordedActions) {
-                val delay = action.timestamp - lastTime
+            for (action in currentActions) {
+                val rawDelay = action.timestamp - lastTime
+                val delay = if (rawDelay > com.autoclicker.app.util.Constants.MAX_DELAY_MS) {
+                    com.autoclicker.app.util.CrashHandler.logWarning("MacroRecorder", "Large delay detected: $rawDelay ms, limiting to ${com.autoclicker.app.util.Constants.MAX_DELAY_MS}")
+                    com.autoclicker.app.util.Constants.MAX_DELAY_MS
+                } else rawDelay
+
                 if (delay > 50) {
                     builder.appendLine("sleep($delay)")
                 }
@@ -134,7 +142,7 @@ class MacroRecorderService : Service() {
         }
         
         createNotificationChannel()
-        startForeground(NOTIFICATION_ID, createNotification())
+        startForeground(com.autoclicker.app.util.Constants.NOTIFICATION_ID_MACRO_RECORDER, createNotification())
         setupOverlay()
         isRecording = true
         recordStartTime = SystemClock.elapsedRealtime()
@@ -190,6 +198,12 @@ class MacroRecorderService : Service() {
 
     private fun setupTouchListener() {
         overlayView?.setOnTouchListener { _, event ->
+            if (actions.size >= com.autoclicker.app.util.Constants.MAX_MACRO_ACTIONS) {
+                Toast.makeText(this, "Достигнут лимит действий (${com.autoclicker.app.util.Constants.MAX_MACRO_ACTIONS})", Toast.LENGTH_SHORT).show()
+                stopRecording()
+                return@setOnTouchListener false
+            }
+            
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     touchStartTime = SystemClock.elapsedRealtime()

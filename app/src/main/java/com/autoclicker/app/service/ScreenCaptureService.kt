@@ -108,7 +108,7 @@ class ScreenCaptureService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(NOTIFICATION_ID, createNotification())
+        startForeground(com.autoclicker.app.util.Constants.NOTIFICATION_ID_SCREEN_CAPTURE, createNotification())
 
         intent?.let {
             val resultCode = it.getIntExtra("resultCode", Activity.RESULT_CANCELED)

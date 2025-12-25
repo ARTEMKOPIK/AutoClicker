@@ -30,10 +30,7 @@ class ColorPickerService : Service() {
 
     companion object {
         private const val CHANNEL_ID = "color_picker_channel"
-        private const val NOTIFICATION_ID = 1003
-        private const val MAX_HISTORY = 6
-        private const val PREFS_COLOR_HISTORY = "color_picker_history"
-        private const val KEY_HISTORY = "history"
+        private const val HISTORY_VERSION = "v1"
 
         fun startService(context: Context) {
             val intent = Intent(context, ColorPickerService::class.java)
@@ -53,7 +50,7 @@ class ColorPickerService : Service() {
     private lateinit var pickerView: View
     private lateinit var params: WindowManager.LayoutParams
     private lateinit var vibrator: Vibrator
-    
+
     private var crosshairView: View? = null
     private var crosshairParams: WindowManager.LayoutParams? = null
 
@@ -67,16 +64,16 @@ class ColorPickerService : Service() {
     private lateinit var btnPickColor: ImageButton
     private lateinit var historyContainer: LinearLayout
 
-    private var currentColor = 0
-    private var currentX = 0
-    private var currentY = 0
-    private var isPicking = false
+    @Volatile private var currentColor = 0
+    @Volatile private var currentX = 0
+    @Volatile private var currentY = 0
+    @Volatile private var isPicking = false
     private var lastVibrationColor = 0
-    
+
     private val colorHistory = mutableListOf<ColorEntry>()
-    
+
     data class ColorEntry(val color: Int, val x: Int, val y: Int)
-    
+
     private val handler = Handler(Looper.getMainLooper())
     private val updateRunnable = object : Runnable {
         override fun run() {
@@ -91,7 +88,7 @@ class ColorPickerService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        
+
         // Устанавливаем обработчик ошибок для этого сервиса
         Thread.currentThread().setUncaughtExceptionHandler { thread, throwable ->
             com.autoclicker.app.util.CrashHandler.logCritical(
@@ -101,7 +98,7 @@ class ColorPickerService : Service() {
             )
             com.autoclicker.app.util.CrashHandler.getInstance()?.uncaughtException(thread, throwable)
         }
-        
+
         // Проверяем разрешение на overlay ПЕРЕД созданием окна
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
             com.autoclicker.app.util.CrashHandler.logError(
@@ -114,12 +111,12 @@ class ColorPickerService : Service() {
             stopSelf()
             return
         }
-        
+
         createNotificationChannel()
-        startForeground(NOTIFICATION_ID, createNotification())
+        startForeground(com.autoclicker.app.util.Constants.NOTIFICATION_ID_COLOR_PICKER, createNotification())
         initVibrator()
         loadColorHistory()
-        
+
         try {
             setupFloatingPicker()
         } catch (e: Exception) {
@@ -134,12 +131,20 @@ class ColorPickerService : Service() {
             stopSelf()
         }
     }
-    
+
     private fun loadColorHistory() {
         try {
-            val prefs = getSharedPreferences(PREFS_COLOR_HISTORY, Context.MODE_PRIVATE)
-            val historyJson = prefs.getString(KEY_HISTORY, null) ?: return
-            val entries = historyJson.split(";").mapNotNull { entry ->
+            val prefs = getSharedPreferences(com.autoclicker.app.util.Constants.PREFS_COLOR_HISTORY_KEY, Context.MODE_PRIVATE)
+            val historyJson = prefs.getString(com.autoclicker.app.util.Constants.PREFS_KEY_HISTORY, null) ?: return
+
+            // Проверка версии
+            if (!historyJson.startsWith(HISTORY_VERSION + "|")) {
+                CrashHandler.logWarning("ColorPickerService", "Old history version detected or corrupted, clearing")
+                return
+            }
+
+            val data = historyJson.substring(HISTORY_VERSION.length + 1)
+            val entries = data.split(";").mapNotNull { entry ->
                 val parts = entry.split(",")
                 if (parts.size == 3) {
                     try {
@@ -150,17 +155,19 @@ class ColorPickerService : Service() {
                 } else null
             }
             colorHistory.clear()
-            colorHistory.addAll(entries.take(MAX_HISTORY))
+            colorHistory.addAll(entries.take(com.autoclicker.app.util.Constants.MAX_HISTORY_COLOR))
         } catch (e: Exception) {
-            CrashHandler.logError("ColorPickerService", "Error loading color history", e)
+            CrashHandler.logWarning("ColorPickerService", "Failed to load color history", e)
+            colorHistory.clear()
         }
     }
-    
+
     private fun saveColorHistory() {
         try {
-            val prefs = getSharedPreferences(PREFS_COLOR_HISTORY, Context.MODE_PRIVATE)
-            val historyJson = colorHistory.joinToString(";") { "${it.color},${it.x},${it.y}" }
-            prefs.edit().putString(KEY_HISTORY, historyJson).apply()
+            val prefs = getSharedPreferences(com.autoclicker.app.util.Constants.PREFS_COLOR_HISTORY_KEY, Context.MODE_PRIVATE)
+            val historyData = colorHistory.joinToString(";") { "${it.color},${it.x},${it.y}" }
+            val historyJson = "$HISTORY_VERSION|$historyData"
+            prefs.edit().putString(com.autoclicker.app.util.Constants.PREFS_KEY_HISTORY, historyJson).apply()
         } catch (e: Exception) {
             CrashHandler.logError("ColorPickerService", "Error saving color history", e)
         }
@@ -428,7 +435,7 @@ class ColorPickerService : Service() {
         colorHistory.add(0, ColorEntry(color, x, y))
         
         // Ограничиваем размер
-        while (colorHistory.size > MAX_HISTORY) {
+        while (colorHistory.size > com.autoclicker.app.util.Constants.MAX_HISTORY_COLOR) {
             colorHistory.removeAt(colorHistory.size - 1)
         }
         
@@ -526,10 +533,15 @@ class ColorPickerService : Service() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         isPicking = false
+        handler.removeCallbacks(updateRunnable)
         handler.removeCallbacksAndMessages(null) // Удаляем ВСЕ callbacks
-        hideCrosshair()
+        
+        try {
+            hideCrosshair()
+        } catch (e: Exception) {
+            CrashHandler.logError("ColorPickerService", "Error removing crosshair view", e)
+        }
         
         // Сохраняем позицию пипетки
         if (::params.isInitialized) {
@@ -548,9 +560,9 @@ class ColorPickerService : Service() {
                 windowManager.removeView(pickerView)
             }
         } catch (e: Exception) {
-            // View already removed
+            CrashHandler.logError("ColorPickerService", "Error removing picker view", e)
         }
         
-        // НЕ останавливаем другие сервисы - пользователь может хотеть их использовать отдельно
+        super.onDestroy()
     }
 }

@@ -120,7 +120,7 @@ class FloatingWindowService : Service() {
         storage = ScriptStorage(this)
         prefs = com.autoclicker.app.util.PrefsManager(this)
         createNotificationChannel()
-        startForeground(NOTIFICATION_ID, createNotification("Панель управления активна"))
+        startForeground(com.autoclicker.app.util.Constants.NOTIFICATION_ID_FLOATING_WINDOW, createNotification("Панель управления активна"))
         
         try {
             setupFloatingWindow()
