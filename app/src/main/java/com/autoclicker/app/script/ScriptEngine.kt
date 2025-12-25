@@ -130,12 +130,28 @@ class ScriptEngine(
         }
     }
 
-    private fun getTextRecognizer(): TextRecognizer {
+    private fun getTextRecognizer(): TextRecognizer? {
         synchronized(recognizerLock) {
             if (textRecognizer == null) {
-                textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                try {
+                    textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                    if (textRecognizer == null) {
+                        com.autoclicker.app.util.CrashHandler.logError(
+                            "ScriptEngine",
+                            "Failed to initialize TextRecognizer: getClient returned null",
+                            null
+                        )
+                    }
+                } catch (e: Exception) {
+                    com.autoclicker.app.util.CrashHandler.logError(
+                        "ScriptEngine",
+                        "Failed to initialize TextRecognizer",
+                        e
+                    )
+                    textRecognizer = null
+                }
             }
-            return textRecognizer!!
+            return textRecognizer
         }
     }
 
@@ -1075,7 +1091,12 @@ class ScriptEngine(
             val latch = CountDownLatch(1)
             var result = ""
 
-            getTextRecognizer().process(image)
+            val recognizer = getTextRecognizer()
+            if (recognizer == null) {
+                log("OCR Error: TextRecognizer not initialized")
+                latch.countDown()
+            } else {
+                recognizer.process(image)
                 .addOnSuccessListener { visionText ->
                     result = visionText.text.replace("\n", " ").trim()
                     latch.countDown()
@@ -1084,6 +1105,7 @@ class ScriptEngine(
                     log("OCR Error: ${e.message}")
                     latch.countDown()
                 }
+            }
 
             if (!latch.await(3000, TimeUnit.MILLISECONDS)) {
                 log("OCR Timeout")

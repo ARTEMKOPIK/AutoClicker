@@ -26,9 +26,18 @@ class SettingsActivity : BaseActivity() {
     private val screenCaptureLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            ScreenCaptureService.startService(this, result.resultCode, result.data!!)
-            updatePermissionStatus()
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            if (data != null) {
+                ScreenCaptureService.startService(this, result.resultCode, data)
+                updatePermissionStatus()
+            } else {
+                com.autoclicker.app.util.CrashHandler.logWarning(
+                    "SettingsActivity",
+                    "Screen capture result data is null"
+                )
+                Toast.makeText(this, "Не удалось получить разрешение на захват экрана", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

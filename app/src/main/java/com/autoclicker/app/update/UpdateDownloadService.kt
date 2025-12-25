@@ -300,12 +300,27 @@ class UpdateDownloadService : Service() {
     private fun installUpdate(filePath: String) {
         try {
             val file = if (filePath.startsWith("file://")) {
-                File(Uri.parse(filePath).path!!)
+                val uri = Uri.parse(filePath)
+                val path = uri.path
+                if (path == null) {
+                    com.autoclicker.app.util.CrashHandler.logError(
+                        "UpdateDownloadService",
+                        "Failed to parse file path from URI: $filePath",
+                        null
+                    )
+                    showNotification("Ошибка", "Не удалось получить путь к файлу обновления", false)
+                    return
+                }
+                File(path)
             } else {
                 File(filePath)
             }
             
             if (!file.exists()) {
+                com.autoclicker.app.util.CrashHandler.logWarning(
+                    "UpdateDownloadService",
+                    "Update file does not exist: ${file.absolutePath}"
+                )
                 return
             }
             
@@ -397,4 +412,3 @@ class UpdateDownloadService : Service() {
         stopSelfAndCleanup()
     }
 }
-
