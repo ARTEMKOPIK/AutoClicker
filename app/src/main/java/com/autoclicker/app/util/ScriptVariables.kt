@@ -5,8 +5,11 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 /**
- * Глобальные переменные для скриптов
- * Сохраняются между запусками
+ * Глобальные переменные для скриптов.
+ * Сохраняются между запусками.
+ * 
+ * Thread-safety: All operations are synchronized using a lock object.
+ * The in-memory cache is protected from concurrent access.
  */
 object ScriptVariables {
 
@@ -32,7 +35,7 @@ object ScriptVariables {
                 cache.clear()
                 cache.putAll(map)
             } catch (e: Exception) {
-                android.util.Log.e("ScriptVariables", "Error loading variables", e)
+                CrashHandler.logError("ScriptVariables", "Error loading variables", e)
             }
         }
     }
@@ -44,7 +47,7 @@ object ScriptVariables {
                 val stringMap = cache.mapValues { it.value.toString() }
                 prefs.edit().putString("variables", gson.toJson(stringMap)).apply()
             } catch (e: Exception) {
-                android.util.Log.e("ScriptVariables", "Error saving variables", e)
+                CrashHandler.logError("ScriptVariables", "Error saving variables", e)
             }
         }
     }

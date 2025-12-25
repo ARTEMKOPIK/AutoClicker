@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import com.autoclicker.app.service.ClickerAccessibilityService
 import com.autoclicker.app.service.ScreenCaptureService
+import com.autoclicker.app.util.Constants
 import com.autoclicker.app.util.CrashHandler
 import com.autoclicker.app.util.PrefsManager
 import com.autoclicker.app.util.ScriptLogger
@@ -16,11 +17,25 @@ import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import java.io.Closeable
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.random.Random
 
+/**
+ * Script execution engine with comprehensive parameter validation and thread-safety.
+ * 
+ * Thread-safety:
+ * - variables Map uses ConcurrentHashMap for thread-safe access
+ * - textRecognizer is protected by recognizerLock
+ * - functions map is accessed only during parsing phase (single-threaded)
+ * 
+ * Input validation:
+ * - All coordinate parameters are validated against screen bounds
+ * - Sleep duration must be non-negative
+ * - All numeric parameters are range-checked before use
+ */
 class ScriptEngine(
     private val context: Context,
     private val logCallback: (String) -> Unit,
@@ -31,7 +46,8 @@ class ScriptEngine(
     private var textRecognizer: TextRecognizer? = null
     private val recognizerLock = Any()
 
-    private val variables = mutableMapOf<String, Any>()
+    // Thread-safe variable storage using ConcurrentHashMap
+    private val variables = ConcurrentHashMap<String, Any>()
     private val functions = mutableMapOf<String, FunctionDef>()
 
     private val exitFlag = AtomicBoolean(false)
@@ -695,8 +711,74 @@ class ScriptEngine(
 
     // ==================== ОСНОВНЫЕ ФУНКЦИИ ====================
 
+    /**
+     * Validate coordinates are within screen bounds.
+     * 
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @return true if coordinates are valid
+     */
+    private fun validateCoordinates(x: Float, y: Float): Boolean {
+        // Allow coordinates slightly outside bounds for gestures (swipes)
+        val maxWidth = Constants.FALLBACK_SCREEN_WIDTH * 1.5f
+        val maxHeight = Constants.FALLBACK_SCREEN_HEIGHT * 1.5f
+        return x >= 0 && y >= 0 && x < maxWidth && y < maxHeight
+    }
+
+    /**
+     * Validate tap coordinates (must be on screen).
+     * 
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @return true if coordinates are on screen
+     */
+    private fun validateTapCoordinates(x: Float, y: Float): Boolean {
+        val maxWidth = Constants.FALLBACK_SCREEN_WIDTH
+        val maxHeight = Constants.FALLBACK_SCREEN_HEIGHT
+        if (x < 0 || y < 0 || x >= maxWidth || y >= maxHeight) {
+            log("⚠️ Координаты вне экрана: (${x.toInt()}, ${y.toInt()})")
+            return false
+        }
+        return true
+    }
+
+    /**
+     * Validate sleep duration is non-negative.
+     * 
+     * @param ms Duration in milliseconds
+     * @return true if duration is valid
+     */
+    private fun validateSleepDuration(ms: Long): Boolean {
+        if (ms < 0) {
+            log("⚠️ Невалидная задержка: $msms (должно быть >= 0)")
+            return false
+        }
+        return true
+    }
+
+    /**
+     * Validate tap count is positive.
+     * 
+     * @param count Number of taps
+     * @return true if count is valid
+     */
+    private fun validateTapCount(count: Int): Boolean {
+        if (count <= 0) {
+            log("⚠️ Невалидное количество тапов: $count (должно быть > 0)")
+            return false
+        }
+        return true
+    }
+
     fun click(x: Float, y: Float) {
         if (EXIT || Thread.currentThread().isInterrupted) return
+        
+        // Validate coordinates
+        if (!validateTapCoordinates(x, y)) {
+            CrashHandler.logWarning("ScriptEngine", "Invalid click coordinates: $x, $y")
+            return
+        }
+        
         val service = ClickerAccessibilityService.instance
         if (service == null) {
             log("⚠️ Accessibility Service недоступен")
@@ -708,6 +790,19 @@ class ScriptEngine(
 
     fun longClick(x: Float, y: Float, duration: Long = 500L) {
         if (EXIT || Thread.currentThread().isInterrupted) return
+        
+        // Validate coordinates
+        if (!validateTapCoordinates(x, y)) {
+            CrashHandler.logWarning("ScriptEngine", "Invalid longClick coordinates: $x, $y")
+            return
+        }
+        
+        // Validate duration
+        if (duration < 0) {
+            log("⚠️ Невалидная длительность: ${duration}ms (должно быть >= 0)")
+            return
+        }
+        
         val service = ClickerAccessibilityService.instance
         if (service == null) {
             log("⚠️ Accessibility Service недоступен")
@@ -719,6 +814,19 @@ class ScriptEngine(
 
     fun swipe(x1: Float, y1: Float, x2: Float, y2: Float, duration: Long = 300L) {
         if (EXIT || Thread.currentThread().isInterrupted) return
+        
+        // Validate coordinates (allow off-screen for gestures)
+        if (!validateCoordinates(x1, y1) || !validateCoordinates(x2, y2)) {
+            CrashHandler.logWarning("ScriptEngine", "Invalid swipe coordinates: ($x1,$y1) -> ($x2,$y2)")
+            return
+        }
+        
+        // Validate duration
+        if (duration <= 0) {
+            log("⚠️ Невалидная длительность свайпа: ${duration}ms (должно быть > 0)")
+            return
+        }
+        
         val service = ClickerAccessibilityService.instance
         if (service == null) {
             log("⚠️ Accessibility Service недоступен")
@@ -730,6 +838,20 @@ class ScriptEngine(
 
     fun tap(x: Float, y: Float, count: Int, delay: Long = 100L) {
         if (EXIT || Thread.currentThread().isInterrupted) return
+        
+        // Validate coordinates
+        if (!validateTapCoordinates(x, y)) {
+            CrashHandler.logWarning("ScriptEngine", "Invalid tap coordinates: $x, $y")
+            return
+        }
+        
+        // Validate count and delay
+        if (!validateTapCount(count)) return
+        if (delay < 0) {
+            log("⚠️ Невалидная задержка тапов: ${delay}ms (должно быть >= 0)")
+            return
+        }
+        
         val service = ClickerAccessibilityService.instance
         if (service == null) {
             log("⚠️ Accessibility Service недоступен")
@@ -744,6 +866,9 @@ class ScriptEngine(
     }
 
     fun sleep(ms: Long) {
+        // Validate duration
+        if (!validateSleepDuration(ms)) return
+        
         if (ms <= 0) return
         // Разбиваем на маленькие интервалы для быстрой реакции на EXIT
         val interval = 50L
