@@ -1,5 +1,6 @@
-## [1.0.15] - 2025-12-25\n\n### 🐛 Исправления
-- Fix compilation error: remove non-existent showNotification call
-- Fix all critical NPE risks with null-safety improvements
+## [1.0.16] - 2025-12-25\n\n### 📝 Другое
+- 🐛 Исправлен вызов метода: loadScripts → getAllScripts
+- 🐛 Исправлена ошибка компиляции в ExportImportManager
+- ✨ Добавлены светлая/тёмная/системная темы
 
 
