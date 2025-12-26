@@ -130,5 +130,20 @@
     <string name="main_stop">Stop All</string>
     <string name="main_home">Home</string>
     <string name="main_start_panel">Start Panel</string>
+    
+    <!-- Statistics -->
+    <string name="statistics_title">Statistics</string>
+    <string name="statistics_overall">OVERALL STATISTICS</string>
+    <string name="statistics_top_scripts">TOP SCRIPTS</string>
+    <string name="statistics_total_runs">Total Runs</string>
+    <string name="statistics_total_scripts">Total Scripts</string>
+    <string name="statistics_avg_duration">Avg Duration</string>
+    <string name="statistics_success_rate">Success Rate</string>
+    <string name="statistics_runs">runs</string>
+    <string name="statistics_avg">Avg</string>
+    <string name="statistics_no_data">No Data</string>
+    <string name="statistics_no_data_hint">Run scripts to see statistics</string>
+    <string name="statistics_clear_title">Clear Statistics</string>
+    <string name="statistics_clear_message">All statistics will be deleted. Continue?</string>
+    <string name="statistics_cleared">Statistics cleared</string>
 </resources>
-
