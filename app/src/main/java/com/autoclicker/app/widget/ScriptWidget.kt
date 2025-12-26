@@ -60,6 +60,13 @@ class ScriptWidget : AppWidgetProvider() {
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
         
+        // Проверка безопасности: разрешаем только интенты от нашего приложения
+        val callingPackage = intent.getStringExtra("calling_package")
+        if (callingPackage != null && callingPackage != context.packageName) {
+            // Игнорируем интенты от сторонних приложений
+            return
+        }
+        
         val widgetId = intent.getIntExtra(EXTRA_WIDGET_ID, -1)
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val storage = ScriptStorage(context)
@@ -160,6 +167,7 @@ class ScriptWidget : AppWidgetProvider() {
             action = ACTION_START_SCRIPT
             script?.let { putExtra(EXTRA_SCRIPT_ID, it.id) }
             putExtra(EXTRA_WIDGET_ID, appWidgetId)
+            putExtra("calling_package", context.packageName)
         }
         val startPendingIntent = PendingIntent.getBroadcast(
             context,
@@ -173,6 +181,7 @@ class ScriptWidget : AppWidgetProvider() {
         val stopIntent = Intent(context, ScriptWidget::class.java).apply {
             action = ACTION_STOP_SCRIPT
             putExtra(EXTRA_WIDGET_ID, appWidgetId)
+            putExtra("calling_package", context.packageName)
         }
         val stopPendingIntent = PendingIntent.getBroadcast(
             context,
@@ -186,6 +195,7 @@ class ScriptWidget : AppWidgetProvider() {
         val prevIntent = Intent(context, ScriptWidget::class.java).apply {
             action = ACTION_PREV_SCRIPT
             putExtra(EXTRA_WIDGET_ID, appWidgetId)
+            putExtra("calling_package", context.packageName)
         }
         val prevPendingIntent = PendingIntent.getBroadcast(
             context,
@@ -199,6 +209,7 @@ class ScriptWidget : AppWidgetProvider() {
         val nextIntent = Intent(context, ScriptWidget::class.java).apply {
             action = ACTION_NEXT_SCRIPT
             putExtra(EXTRA_WIDGET_ID, appWidgetId)
+            putExtra("calling_package", context.packageName)
         }
         val nextPendingIntent = PendingIntent.getBroadcast(
             context,

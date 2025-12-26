@@ -45,6 +45,13 @@ class QuickLaunchWidget : AppWidgetProvider() {
         super.onReceive(context, intent)
 
         if (intent.action == ACTION_TOGGLE) {
+            // Проверка безопасности: разрешаем только интенты от нашего приложения
+            val callingPackage = intent.getStringExtra("calling_package")
+            if (callingPackage != null && callingPackage != context.packageName) {
+                // Игнорируем интенты от сторонних приложений
+                return
+            }
+            
             val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             val isRunning = prefs.getBoolean(KEY_IS_RUNNING, false)
             
@@ -83,6 +90,7 @@ class QuickLaunchWidget : AppWidgetProvider() {
         // Toggle intent
         val toggleIntent = Intent(context, QuickLaunchWidget::class.java).apply {
             action = ACTION_TOGGLE
+            putExtra("calling_package", context.packageName)
         }
         val pendingIntent = PendingIntent.getBroadcast(
             context,
