@@ -1,16 +1,22 @@
 package com.autoclicker.app.base
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.autoclicker.app.R
 import com.autoclicker.app.util.CrashHandler
+import com.autoclicker.app.util.LocaleManager
 
 /**
- * Базовый класс Activity с анимациями переходов и обработкой ошибок
+ * Базовый класс Activity с анимациями переходов, обработкой ошибок и локализацией
  */
 abstract class BaseActivity : AppCompatActivity() {
+
+    override fun attachBaseContext(newBase: Context?) {
+        super.attachBaseContext(newBase?.let { LocaleManager.applyLocale(it) })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Устанавливаем обработчик ошибок для UI потока этой Activity

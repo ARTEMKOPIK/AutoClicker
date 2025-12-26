@@ -20,6 +20,7 @@ import com.autoclicker.app.base.BaseActivity
 import com.autoclicker.app.service.ScreenCaptureService
 import com.autoclicker.app.update.UpdateChecker
 import com.autoclicker.app.util.ThemeManager
+import com.autoclicker.app.util.LocaleManager
 
 class SettingsActivity : BaseActivity() {
 
@@ -57,6 +58,7 @@ class SettingsActivity : BaseActivity() {
         updateChecker = UpdateChecker(this)
 
         setupPermissionItems()
+        setupLanguageSelector()
         setupThemeSelector()
         setupVersionInfo()
     }
@@ -100,6 +102,57 @@ class SettingsActivity : BaseActivity() {
 
         findViewById<LinearLayout>(R.id.itemCheckUpdates).setOnClickListener {
             checkForUpdates()
+        }
+    }
+
+    private fun setupLanguageSelector() {
+        val spinner = findViewById<Spinner>(R.id.spinnerLanguage)
+        
+        // Создаём адаптер со списком языков
+        val languages = listOf(
+            LocaleManager.LANGUAGE_SYSTEM to getString(R.string.settings_language_system),
+            LocaleManager.LANGUAGE_RUSSIAN to getString(R.string.settings_language_russian),
+            LocaleManager.LANGUAGE_ENGLISH to getString(R.string.settings_language_english)
+        )
+        val languageNames = languages.map { it.second }
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, languageNames)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+        
+        // Устанавливаем текущий выбранный язык
+        val currentLanguage = LocaleManager.getLanguage(this)
+        val currentIndex = languages.indexOfFirst { it.first == currentLanguage }
+        if (currentIndex >= 0) {
+            spinner.setSelection(currentIndex)
+        }
+        
+        // Флаг для игнорирования первого срабатывания при инициализации
+        var isInitialSelection = true
+        
+        // Обработчик выбора языка
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // Игнорируем первое срабатывание при установке начальной позиции
+                if (isInitialSelection) {
+                    isInitialSelection = false
+                    return
+                }
+                
+                val selectedLanguage = languages[position].first
+                val currentSavedLanguage = LocaleManager.getLanguage(this@SettingsActivity)
+                
+                // Проверяем, изменился ли язык
+                if (selectedLanguage != currentSavedLanguage) {
+                    LocaleManager.setLanguage(this@SettingsActivity, selectedLanguage)
+                    
+                    // Перезапускаем активити для применения языка
+                    recreate()
+                }
+            }
+            
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Ничего не делаем
+            }
         }
     }
 

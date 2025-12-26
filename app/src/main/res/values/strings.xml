@@ -92,4 +92,42 @@
     <string name="search_replace">Найти и заменить</string>
     <string name="search_results" formatted="false">%d из %d</string>
     <string name="replace_all">Заменить все</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_language_system">Системный</string>
+    <string name="settings_language_russian">Русский</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_version">Версия</string>
+    <string name="settings_check_updates">Проверить обновления</string>
+    <string name="settings_about">О приложении</string>
+    
+    <!-- Update -->
+    <string name="update_available">Доступно обновление</string>
+    <string name="update_checking">Проверка обновлений...</string>
+    <string name="update_no_updates">У вас последняя версия</string>
+    <string name="update_download">Скачать</string>
+    <string name="update_install">Установить</string>
+    <string name="update_later">Позже</string>
+    <string name="update_skip">Пропустить эту версию</string>
+    <string name="update_downloading">Загрузка обновления...</string>
+    <string name="update_ready">Обновление готово к установке</string>
+    
+    <!-- Main Screen -->
+    <string name="main_scripts">Скрипты</string>
+    <string name="main_new_script">Новый скрипт</string>
+    <string name="main_visual_editor">Визуальный редактор</string>
+    <string name="main_help">Инструкция</string>
+    <string name="main_screenshot">Скриншот</string>
+    <string name="main_color_picker">Пипетка</string>
+    <string name="main_telegram">Telegram</string>
+    <string name="main_scheduler">Планировщик</string>
+    <string name="main_macro">Запись макроса</string>
+    <string name="main_profiles">Профили</string>
+    <string name="main_logs">Логи</string>
+    <string name="main_stop">Остановить всё</string>
+    <string name="main_home">Домой</string>
+    <string name="main_start_panel">Запуск панели</string>
 </resources>
