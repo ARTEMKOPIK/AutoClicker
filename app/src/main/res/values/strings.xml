@@ -28,6 +28,7 @@
     <string name="action_discard">Отменить изменения</string>
     <string name="action_menu">Меню</string>
     <string name="action_copy">Копировать</string>
+    <string name="action_insert">Вставить</string>
     <string name="action_close">Закрыть</string>
     
     <!-- Messages -->
