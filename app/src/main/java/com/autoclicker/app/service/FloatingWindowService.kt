@@ -576,6 +576,14 @@ class FloatingWindowService : Service() {
         super.onDestroy()
         isDestroyed = true
         stopScript()
+        
+        // КРИТИЧНО: Отменяем корутины перед уничтожением сервиса
+        // Это предотвращает memory leak если сервис уничтожается во время выполнения скрипта
+        scriptJob?.cancel()
+        serviceScope?.cancel()
+        serviceScope = null
+        currentEngine = null
+        
         handler.removeCallbacksAndMessages(null) // Удаляем ВСЕ callbacks
         try {
             if (::floatingView.isInitialized) {
