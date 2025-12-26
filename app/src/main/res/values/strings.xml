@@ -130,4 +130,20 @@
     <string name="main_stop">Остановить всё</string>
     <string name="main_home">Домой</string>
     <string name="main_start_panel">Запуск панели</string>
+    
+    <!-- Statistics -->
+    <string name="statistics_title">Статистика</string>
+    <string name="statistics_overall">ОБЩАЯ СТАТИСТИКА</string>
+    <string name="statistics_top_scripts">ТОП СКРИПТОВ</string>
+    <string name="statistics_total_runs">Запусков</string>
+    <string name="statistics_total_scripts">Скриптов</string>
+    <string name="statistics_avg_duration">Средняя длит.</string>
+    <string name="statistics_success_rate">Успешность</string>
+    <string name="statistics_runs">запусков</string>
+    <string name="statistics_avg">Ср</string>
+    <string name="statistics_no_data">Нет данных</string>
+    <string name="statistics_no_data_hint">Запустите скрипты чтобы увидеть статистику</string>
+    <string name="statistics_clear_title">Очистить статистику</string>
+    <string name="statistics_clear_message">Вся статистика будет удалена. Продолжить?</string>
+    <string name="statistics_cleared">Статистика очищена</string>
 </resources>
