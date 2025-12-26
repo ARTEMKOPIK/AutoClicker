@@ -323,6 +323,44 @@ class UpdateDownloadService : Service() {
                 return
             }
             
+            // КРИТИЧНО: Проверяем подпись APK перед установкой
+            com.autoclicker.app.util.CrashHandler.logInfo(
+                "UpdateDownloadService",
+                "Verifying APK signature before installation..."
+            )
+            
+            val isSignatureValid = ApkSignatureVerifier.verifyApkSignature(this, file)
+            
+            if (!isSignatureValid) {
+                com.autoclicker.app.util.CrashHandler.logError(
+                    "UpdateDownloadService",
+                    "🔴 SECURITY: APK signature verification FAILED!",
+                    null
+                )
+                
+                // Показываем notification об ошибке безопасности
+                val errorNotification = UpdateNotificationHelper.createErrorNotification(
+                    this,
+                    versionName,
+                    "Ошибка безопасности: подпись APK не совпадает"
+                )
+                UpdateNotificationHelper.updateNotification(this, errorNotification)
+                
+                // Удаляем потенциально опасный файл
+                try {
+                    file.delete()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                
+                return
+            }
+            
+            com.autoclicker.app.util.CrashHandler.logInfo(
+                "UpdateDownloadService",
+                "✅ APK signature verified, proceeding with installation"
+            )
+            
             val uri = FileProvider.getUriForFile(
                 this,
                 "${packageName}.fileprovider",
