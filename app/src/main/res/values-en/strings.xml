@@ -27,6 +27,8 @@
     <string name="action_add_script">Add script</string>
     <string name="action_discard">Discard changes</string>
     <string name="action_menu">Menu</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_close">Close</string>
     
     <!-- Messages -->
     <string name="msg_saved">Saved</string>
@@ -146,4 +148,90 @@
     <string name="statistics_clear_title">Clear Statistics</string>
     <string name="statistics_clear_message">All statistics will be deleted. Continue?</string>
     <string name="statistics_cleared">Statistics cleared</string>
+    
+    <!-- Visual Editor Pro -->
+    <string name="visual_editor_title">Visual Editor Pro</string>
+    <string name="visual_editor_add_block">Add Block</string>
+    <string name="visual_editor_empty_title">No Blocks Yet</string>
+    <string name="visual_editor_empty_hint">Tap "Add Block" to start building your script visually</string>
+    <string name="visual_editor_no_blocks">No blocks to generate code</string>
+    <string name="visual_editor_generated_code">Generated Code</string>
+    <string name="visual_editor_code_copied">Code copied to clipboard</string>
+    <string name="visual_editor_script_saved">Script saved</string>
+    <string name="visual_editor_rename_script">Rename Script</string>
+    <string name="visual_editor_select_block">Select Block Type</string>
+    <string name="block_no_params">No parameters</string>
+    
+    <!-- Block Names -->
+    <string name="block_click">Click</string>
+    <string name="block_long_click">Long Click</string>
+    <string name="block_swipe">Swipe</string>
+    <string name="block_tap">Tap</string>
+    <string name="block_sleep">Sleep</string>
+    <string name="block_wait_color">Wait for Color</string>
+    <string name="block_wait_text">Wait for Text</string>
+    <string name="block_if_color">If Color</string>
+    <string name="block_if_text">If Text</string>
+    <string name="block_if_image">If Image</string>
+    <string name="block_loop">Loop Forever</string>
+    <string name="block_loop_count">Loop Count</string>
+    <string name="block_set_var">Set Variable</string>
+    <string name="block_inc_var">Increment Variable</string>
+    <string name="block_dec_var">Decrement Variable</string>
+    <string name="block_log">Log Message</string>
+    <string name="block_toast">Show Toast</string>
+    <string name="block_telegram">Send Telegram</string>
+    <string name="block_get_text">Get Text (OCR)</string>
+    <string name="block_find_text">Find Text</string>
+    <string name="block_back">Back Button</string>
+    <string name="block_home">Home Button</string>
+    <string name="block_recents">Recents Button</string>
+    <string name="block_function">Define Function</string>
+    <string name="block_call_func">Call Function</string>
+    <string name="block_return">Return</string>
+    <string name="block_comment">Comment</string>
+    <string name="block_break">Break Loop</string>
+    
+    <!-- Block Descriptions -->
+    <string name="block_click_desc">Click at specific coordinates</string>
+    <string name="block_long_click_desc">Long press at coordinates</string>
+    <string name="block_swipe_desc">Swipe from one point to another</string>
+    <string name="block_tap_desc">Multiple taps at coordinates</string>
+    <string name="block_sleep_desc">Wait for milliseconds</string>
+    <string name="block_wait_color_desc">Wait until pixel has color</string>
+    <string name="block_wait_text_desc">Wait until text appears</string>
+    <string name="block_if_color_desc">Execute if pixel color matches</string>
+    <string name="block_if_text_desc">Execute if text is found</string>
+    <string name="block_if_image_desc">Execute if image is found</string>
+    <string name="block_loop_desc">Repeat forever</string>
+    <string name="block_loop_count_desc">Repeat N times</string>
+    <string name="block_set_var_desc">Set variable value</string>
+    <string name="block_inc_var_desc">Add 1 to variable</string>
+    <string name="block_dec_var_desc">Subtract 1 from variable</string>
+    <string name="block_log_desc">Write to log</string>
+    <string name="block_toast_desc">Show popup message</string>
+    <string name="block_telegram_desc">Send message to Telegram</string>
+    <string name="block_get_text_desc">Extract text from area</string>
+    <string name="block_find_text_desc">Search for text on screen</string>
+    <string name="block_back_desc">Press back button</string>
+    <string name="block_home_desc">Press home button</string>
+    <string name="block_recents_desc">Press recents button</string>
+    <string name="block_function_desc">Define a reusable function</string>
+    <string name="block_call_func_desc">Call a function</string>
+    <string name="block_return_desc">Return from function</string>
+    <string name="block_comment_desc">Add a comment</string>
+    <string name="block_break_desc">Exit loop early</string>
+    
+    <!-- Categories -->
+    <string name="category_all">All</string>
+    <string name="category_actions">Actions</string>
+    <string name="category_wait">Wait</string>
+    <string name="category_conditions">Conditions</string>
+    <string name="category_loops">Loops</string>
+    <string name="category_variables">Variables</string>
+    <string name="category_output">Output</string>
+    <string name="category_ocr">OCR</string>
+    <string name="category_system">System</string>
+    <string name="category_functions">Functions</string>
+    <string name="category_special">Special</string>
 </resources>
