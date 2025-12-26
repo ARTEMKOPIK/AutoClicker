@@ -127,10 +127,6 @@
             android:label="AutoClicker">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.autoclicker.app.ACTION_START_SCRIPT" />
-                <action android:name="com.autoclicker.app.ACTION_STOP_SCRIPT" />
-                <action android:name="com.autoclicker.app.ACTION_NEXT_SCRIPT" />
-                <action android:name="com.autoclicker.app.ACTION_PREV_SCRIPT" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -144,17 +140,16 @@
             android:label="AutoClicker Quick">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="com.autoclicker.app.ACTION_TOGGLE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_quick_launch_info" />
         </receiver>
 
-        <!-- Планировщик -->
+        <!-- Планировщик - только для внутреннего использования -->
         <receiver
             android:name=".util.ScriptScheduler$SchedulerReceiver"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.autoclicker.app.ACTION_RUN_SCHEDULED_SCRIPT" />
             </intent-filter>
