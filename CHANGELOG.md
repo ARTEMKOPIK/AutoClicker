@@ -1,10 +1,13 @@
-## [1.1.3] - 2025-12-26\n\n### 🐛 Исправления
-- Fix LocaleManager compilation error: Add missing R import
-- Fix missing accent_purple color reference
+## [1.1.4] - 2025-12-26\n\n### ✨ Новое
+- Add missing ic_drag drawable resource
+
+### 🐛 Исправления
+- Fix Kotlin compilation errors in old Visual Editor files
+- Fix Android build errors: Add missing resources and data classes
+- Fix XML structure in English strings file
+- Fix malformed XML in strings.xml
 
 ### 📝 Другое
-- 📊 Добавлен Dashboard с аналитикой и статистикой
-- 🌍 Добавлена мультиязычность - Русский и Английский
-- 📚 Добавлен подробный README.md с полной документацией
+- 🎨 Добавлен Visual Editor Pro с drag & drop блоками
 
 
