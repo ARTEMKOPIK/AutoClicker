@@ -235,3 +235,62 @@
     <string name="visual_editor_select_block">Выбор типа блока</string>
     <string name="category_all">Все</string>
 </resources>
+    
+    <!-- Snippets Library -->
+    <string name="snippets_library_title">Библиотека сниппетов</string>
+    <string name="snippets_search_hint">Поиск сниппетов...</string>
+    <string name="snippets_empty_title">Сниппеты не найдены</string>
+    <string name="snippets_empty_hint">Попробуйте изменить фильтры или поисковый запрос</string>
+    <string name="snippet_copied">Код скопирован в буфер обмена</string>
+    <string name="snippet_inserted">Код вставлен в редактор</string>
+    <string name="snippet_added_to_favorites">Добавлено в избранное</string>
+    <string name="snippet_removed_from_favorites">Удалено из избранного</string>
+    
+    <!-- Snippet Categories -->
+    <string name="snippet_category_all">Все</string>
+    <string name="snippet_category_favorites">Избранное</string>
+    <string name="snippet_category_basic">Базовые</string>
+    <string name="snippet_category_games">Игры</string>
+    <string name="snippet_category_automation">Автоматизация</string>
+    <string name="snippet_category_testing">Тестирование</string>
+    <string name="snippet_category_advanced">Продвинутые</string>
+    
+    <!-- Basic Snippets -->
+    <string name="snippet_basic_click_name">Простой клик</string>
+    <string name="snippet_basic_click_desc">Клик по координатам с задержкой</string>
+    <string name="snippet_basic_loop_name">Цикл с кликами</string>
+    <string name="snippet_basic_loop_desc">Повторяющиеся клики с задержкой</string>
+    <string name="snippet_basic_swipe_name">Свайп вниз</string>
+    <string name="snippet_basic_swipe_desc">Свайп для обновления контента</string>
+    <string name="snippet_basic_conditional_name">Условный клик</string>
+    <string name="snippet_basic_conditional_desc">Клик при совпадении цвета</string>
+    
+    <!-- Game Snippets -->
+    <string name="snippet_game_auto_clicker_name">Авто-кликер</string>
+    <string name="snippet_game_auto_clicker_desc">Быстрые повторяющиеся клики для игр</string>
+    <string name="snippet_game_farm_resources_name">Фарм ресурсов</string>
+    <string name="snippet_game_farm_resources_desc">Автоматический сбор ресурсов</string>
+    <string name="snippet_game_quest_complete_name">Выполнение квестов</string>
+    <string name="snippet_game_quest_complete_desc">Автозавершение игровых квестов</string>
+    
+    <!-- Automation Snippets -->
+    <string name="snippet_auto_form_fill_name">Заполнение формы</string>
+    <string name="snippet_auto_form_fill_desc">Автозаполнение полей формы</string>
+    <string name="snippet_auto_scroll_content_name">Прокрутка контента</string>
+    <string name="snippet_auto_scroll_content_desc">Автоматическая прокрутка с паузами</string>
+    <string name="snippet_auto_screenshot_monitor_name">Мониторинг экрана</string>
+    <string name="snippet_auto_screenshot_monitor_desc">Отслеживание изменений и скриншоты</string>
+    
+    <!-- Testing Snippets -->
+    <string name="snippet_test_ui_elements_name">Тест UI элементов</string>
+    <string name="snippet_test_ui_elements_desc">Проверка кнопок и элементов интерфейса</string>
+    <string name="snippet_test_navigation_name">Тест навигации</string>
+    <string name="snippet_test_navigation_desc">Проверка переходов между экранами</string>
+    
+    <!-- Advanced Snippets -->
+    <string name="snippet_advanced_ocr_data_name">Извлечение данных OCR</string>
+    <string name="snippet_advanced_ocr_data_desc">Получение текста с экрана через OCR</string>
+    <string name="snippet_advanced_image_search_name">Поиск изображений</string>
+    <string name="snippet_advanced_image_search_desc">Поиск и клик по изображению</string>
+    <string name="snippet_advanced_multi_account_name">Мульти-аккаунты</string>
+    <string name="snippet_advanced_multi_account_desc">Управление несколькими аккаунтами</string>

@@ -235,3 +235,62 @@
     <string name="category_functions">Functions</string>
     <string name="category_special">Special</string>
 </resources>
+    
+    <!-- Snippets Library -->
+    <string name="snippets_library_title">Snippets Library</string>
+    <string name="snippets_search_hint">Search snippets...</string>
+    <string name="snippets_empty_title">No Snippets Found</string>
+    <string name="snippets_empty_hint">Try changing filters or search query</string>
+    <string name="snippet_copied">Code copied to clipboard</string>
+    <string name="snippet_inserted">Code inserted to editor</string>
+    <string name="snippet_added_to_favorites">Added to favorites</string>
+    <string name="snippet_removed_from_favorites">Removed from favorites</string>
+    
+    <!-- Snippet Categories -->
+    <string name="snippet_category_all">All</string>
+    <string name="snippet_category_favorites">Favorites</string>
+    <string name="snippet_category_basic">Basic</string>
+    <string name="snippet_category_games">Games</string>
+    <string name="snippet_category_automation">Automation</string>
+    <string name="snippet_category_testing">Testing</string>
+    <string name="snippet_category_advanced">Advanced</string>
+    
+    <!-- Basic Snippets -->
+    <string name="snippet_basic_click_name">Simple Click</string>
+    <string name="snippet_basic_click_desc">Click at coordinates with delay</string>
+    <string name="snippet_basic_loop_name">Click Loop</string>
+    <string name="snippet_basic_loop_desc">Repeating clicks with delay</string>
+    <string name="snippet_basic_swipe_name">Swipe Down</string>
+    <string name="snippet_basic_swipe_desc">Swipe to refresh content</string>
+    <string name="snippet_basic_conditional_name">Conditional Click</string>
+    <string name="snippet_basic_conditional_desc">Click when color matches</string>
+    
+    <!-- Game Snippets -->
+    <string name="snippet_game_auto_clicker_name">Auto-Clicker</string>
+    <string name="snippet_game_auto_clicker_desc">Fast repeating clicks for games</string>
+    <string name="snippet_game_farm_resources_name">Farm Resources</string>
+    <string name="snippet_game_farm_resources_desc">Automatic resource collection</string>
+    <string name="snippet_game_quest_complete_name">Quest Completion</string>
+    <string name="snippet_game_quest_complete_desc">Auto-complete game quests</string>
+    
+    <!-- Automation Snippets -->
+    <string name="snippet_auto_form_fill_name">Form Fill</string>
+    <string name="snippet_auto_form_fill_desc">Auto-fill form fields</string>
+    <string name="snippet_auto_scroll_content_name">Content Scroll</string>
+    <string name="snippet_auto_scroll_content_desc">Automatic scrolling with pauses</string>
+    <string name="snippet_auto_screenshot_monitor_name">Screen Monitor</string>
+    <string name="snippet_auto_screenshot_monitor_desc">Track changes and take screenshots</string>
+    
+    <!-- Testing Snippets -->
+    <string name="snippet_test_ui_elements_name">UI Elements Test</string>
+    <string name="snippet_test_ui_elements_desc">Check buttons and UI elements</string>
+    <string name="snippet_test_navigation_name">Navigation Test</string>
+    <string name="snippet_test_navigation_desc">Check transitions between screens</string>
+    
+    <!-- Advanced Snippets -->
+    <string name="snippet_advanced_ocr_data_name">OCR Data Extract</string>
+    <string name="snippet_advanced_ocr_data_desc">Get text from screen via OCR</string>
+    <string name="snippet_advanced_image_search_name">Image Search</string>
+    <string name="snippet_advanced_image_search_desc">Find and click on image</string>
+    <string name="snippet_advanced_multi_account_name">Multi-Account</string>
+    <string name="snippet_advanced_multi_account_desc">Manage multiple accounts</string>
