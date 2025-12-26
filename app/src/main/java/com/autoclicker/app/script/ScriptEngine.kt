@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import com.autoclicker.app.service.ClickerAccessibilityService
+import com.autoclicker.app.util.TemplateMatcher
 import com.autoclicker.app.service.ScreenCaptureService
 import com.autoclicker.app.util.Constants
 import com.autoclicker.app.util.CrashHandler
@@ -92,6 +93,12 @@ class ScriptEngine(
         private val REGEX_GET_VAR = Regex("""getVar\(["'](\w+)["']\)""")
         private val REGEX_INC_VAR = Regex("""incVar\(["'](\w+)["']\)""")
         private val REGEX_DEC_VAR = Regex("""decVar\(["'](\w+)["']\)""")
+
+        // AI-Powered Commands
+        private val REGEX_FIND_TEXT = Regex("""findText\(["'](.*?)["']\)""")
+        private val REGEX_FIND_TEXT_TIMEOUT = Regex("""findText\(["'](.*?)["'],\s*(\d+)\)""")
+        private val REGEX_FIND_IMAGE = Regex("""findImage\(["'](.*?)["']\)""")
+        private val REGEX_FIND_IMAGE_THRESHOLD = Regex("""findImage\(["'](.*?)["'],\s*([0-9.]+)\)""")
     }
 
     fun execute(code: String) {
@@ -201,6 +208,8 @@ class ScriptEngine(
             line.contains("getText(") -> parseGetText(line)
             line.contains("getColor(") -> parseGetColor(line)
             line.contains("pushToCb(") -> parsePushToClipboard(line)
+            line.contains("findText(") -> parseFindText(line)
+            line.contains("findImage(") -> parseFindImage(line)
             line == "EXIT = true" -> EXIT = true
             line.startsWith("while") -> return executeWhileLoop(line, allLines, currentIndex)
             line.startsWith("if") -> return executeIfBlock(line, allLines, currentIndex)
@@ -1130,3 +1139,185 @@ class ScriptEngine(
         log("Clipboard: $text")
     }
 }
+
+    // ==================== AI-POWERED METHODS ====================
+    
+    /**
+     * Find text anywhere on screen using ML Kit OCR.
+     * Returns coordinates of found text or null if not found.
+     * 
+     * @param text Text to search for
+     * @param timeout Maximum time to search in milliseconds (default 5000)
+     * @return Pair of (x, y) coordinates where text was found, or null
+     */
+    fun findText(text: String, timeout: Long = 5000): Pair<Int, Int>? {
+        if (EXIT || Thread.currentThread().isInterrupted) return null
+        
+        log("🔍 FindText: searching for '$text'...")
+        val startTime = System.currentTimeMillis()
+        
+        while (!EXIT && !Thread.currentThread().isInterrupted) {
+            val elapsed = System.currentTimeMillis() - startTime
+            if (elapsed >= timeout) {
+                log("⏱️ FindText: timeout after ${timeout}ms")
+                return null
+            }
+            
+            val screenshot = screenshot() ?: continue
+            
+            try {
+                val image = InputImage.fromBitmap(screenshot, 0)
+                val latch = CountDownLatch(1)
+                var result: Pair<Int, Int>? = null
+                
+                val recognizer = getTextRecognizer()
+                if (recognizer == null) {
+                    log("❌ FindText: TextRecognizer not initialized")
+                    screenshot.recycle()
+                    return null
+                }
+                
+                recognizer.process(image)
+                    .addOnSuccessListener { visionText ->
+                        for (block in visionText.textBlocks) {
+                            if (block.text.contains(text, ignoreCase = true)) {
+                                val rect = block.boundingBox
+                                if (rect != null) {
+                                    result = Pair(rect.centerX(), rect.centerY())
+                                    log("✅ FindText: found at (${rect.centerX()}, ${rect.centerY()}) in ${elapsed}ms")
+                                }
+                                break
+                            }
+                        }
+                        latch.countDown()
+                    }
+                    .addOnFailureListener { e ->
+                        log("❌ FindText error: ${e.message}")
+                        latch.countDown()
+                    }
+                
+                latch.await(2000, TimeUnit.MILLISECONDS)
+                screenshot.recycle()
+                
+                if (result != null) {
+                    return result
+                }
+            } catch (e: Exception) {
+                log("❌ FindText error: ${e.message}")
+                CrashHandler.logError("ScriptEngine", "Error in findText", e)
+                screenshot.recycle()
+            }
+            
+            sleep(200)
+        }
+        
+        return null
+    }
+    
+    /**
+     * Find image on screen using template matching.
+     * Returns coordinates of best match or null if not found.
+     * 
+     * @param imagePath Path to template image file
+     * @param threshold Confidence threshold (0.0 to 1.0, default 0.8)
+     * @return Pair of (x, y) coordinates where image was found, or null
+     */
+    fun findImage(imagePath: String, threshold: Float = 0.8f): Pair<Int, Int>? {
+        if (EXIT || Thread.currentThread().isInterrupted) return null
+        
+        log("🔍 FindImage: searching for '$imagePath' (threshold: $threshold)...")
+        
+        try {
+            // Load template image
+            val templateFile = java.io.File(imagePath)
+            if (!templateFile.exists()) {
+                log("❌ FindImage: template file not found: $imagePath")
+                return null
+            }
+            
+            val template = android.graphics.BitmapFactory.decodeFile(imagePath)
+            if (template == null) {
+                log("❌ FindImage: failed to decode template image")
+                return null
+            }
+            
+            // Get current screenshot
+            val screenshot = screenshot()
+            if (screenshot == null) {
+                log("❌ FindImage: failed to capture screenshot")
+                template.recycle()
+                return null
+            }
+            
+            // Perform template matching
+            val matcher = TemplateMatcher.getInstance()
+            val matches = matcher.match(screenshot, template, threshold, maxMatches = 1)
+            
+            screenshot.recycle()
+            template.recycle()
+            
+            if (matches.isNotEmpty()) {
+                val match = matches[0]
+                val centerX = match.x + template.width / 2
+                val centerY = match.y + template.height / 2
+                log("✅ FindImage: found at ($centerX, $centerY) with confidence ${match.confidence}")
+                return Pair(centerX, centerY)
+            } else {
+                log("❌ FindImage: not found (no matches above threshold)")
+                return null
+            }
+            
+        } catch (e: Exception) {
+            log("❌ FindImage error: ${e.message}")
+            CrashHandler.logError("ScriptEngine", "Error in findImage", e)
+            return null
+        }
+    }
+    
+    private fun parseFindText(line: String) {
+        val matchTimeout = REGEX_FIND_TEXT_TIMEOUT.find(line)
+        if (matchTimeout != null) {
+            val text = matchTimeout.groupValues[1]
+            val timeout = matchTimeout.groupValues[2].toLong()
+            val result = findText(text, timeout)
+            if (result != null && line.contains("=")) {
+                val varName = line.substringBefore("=").trim().removePrefix("val ").removePrefix("var ")
+                variables[varName] = result
+            }
+            return
+        }
+        
+        val match = REGEX_FIND_TEXT.find(line)
+        if (match != null) {
+            val text = match.groupValues[1]
+            val result = findText(text)
+            if (result != null && line.contains("=")) {
+                val varName = line.substringBefore("=").trim().removePrefix("val ").removePrefix("var ")
+                variables[varName] = result
+            }
+        }
+    }
+    
+    private fun parseFindImage(line: String) {
+        val matchThreshold = REGEX_FIND_IMAGE_THRESHOLD.find(line)
+        if (matchThreshold != null) {
+            val imagePath = matchThreshold.groupValues[1]
+            val threshold = matchThreshold.groupValues[2].toFloat()
+            val result = findImage(imagePath, threshold)
+            if (result != null && line.contains("=")) {
+                val varName = line.substringBefore("=").trim().removePrefix("val ").removePrefix("var ")
+                variables[varName] = result
+            }
+            return
+        }
+        
+        val match = REGEX_FIND_IMAGE.find(line)
+        if (match != null) {
+            val imagePath = match.groupValues[1]
+            val result = findImage(imagePath)
+            if (result != null && line.contains("=")) {
+                val varName = line.substringBefore("=").trim().removePrefix("val ").removePrefix("var ")
+                variables[varName] = result
+            }
+        }
+    }
