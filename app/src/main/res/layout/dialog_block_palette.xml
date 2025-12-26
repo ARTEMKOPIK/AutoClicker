@@ -24,10 +24,11 @@
         android:layout_marginBottom="16dp">
 
         <com.google.android.material.chip.ChipGroup
+            xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/chipGroupCategories"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:singleSelection="true">
+            app:singleSelection="true">
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipAll"
@@ -103,4 +104,3 @@
         android:layout_height="400dp" />
 
 </LinearLayout>
-
