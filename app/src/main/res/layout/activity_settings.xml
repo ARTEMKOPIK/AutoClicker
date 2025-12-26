@@ -430,7 +430,7 @@
                     android:padding="10dp"
                     android:src="@drawable/ic_settings"
                     android:background="@drawable/bg_icon_button"
-                    app:tint="@color/accent_purple" />
+                    app:tint="@color/primary" />
 
                 <LinearLayout
                     android:layout_width="0dp"
