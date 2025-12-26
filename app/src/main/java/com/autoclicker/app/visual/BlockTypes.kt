@@ -1,5 +1,7 @@
 package com.autoclicker.app.visual
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.util.UUID
 
 /**
@@ -204,13 +206,16 @@ data class BlockParam(
 
 /**
  * Экземпляр блока в скрипте
+ * 
+ * ВАЖНО: Реализует Parcelable для сохранения состояния Activity при configuration changes
  */
+@Parcelize
 data class ScriptBlock(
     val id: String = UUID.randomUUID().toString(),
     val type: BlockType,
     val params: MutableMap<String, String> = mutableMapOf(),
     val children: MutableList<ScriptBlock> = mutableListOf()
-) {
+) : Parcelable {
     init {
         // Заполняем дефолтные значения
         type.params.forEach { param ->

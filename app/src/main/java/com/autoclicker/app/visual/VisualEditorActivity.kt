@@ -1,6 +1,7 @@
 package com.autoclicker.app.visual
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -47,7 +48,39 @@ class VisualEditorActivity : BaseActivity() {
         setupListeners()
         
         scriptId = intent.getStringExtra("script_id")
-        loadScript()
+        
+        // КРИТИЧНО: Восстанавливаем состояние после configuration changes (поворот экрана, etc)
+        if (savedInstanceState != null) {
+            // Восстанавливаем имя скрипта
+            etScriptName.setText(savedInstanceState.getString("script_name", ""))
+            
+            // Восстанавливаем блоки из Parcelable array
+            val savedBlocks = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                savedInstanceState.getParcelableArrayList("blocks", ScriptBlock::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                savedInstanceState.getParcelableArrayList("blocks")
+            }
+            
+            if (savedBlocks != null) {
+                blocks.clear()
+                blocks.addAll(savedBlocks)
+                adapter.notifyDataSetChanged()
+                updateEmptyState()
+            }
+        } else {
+            // Первый запуск Activity - загружаем скрипт
+            loadScript()
+        }
+    }
+    
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        
+        // КРИТИЧНО: Сохраняем состояние перед уничтожением Activity
+        // Без этого при повороте экрана все блоки визуального редактора ПОТЕРЯЮТСЯ
+        outState.putString("script_name", etScriptName.text.toString())
+        outState.putParcelableArrayList("blocks", ArrayList(blocks))
     }
 
     private fun initViews() {
