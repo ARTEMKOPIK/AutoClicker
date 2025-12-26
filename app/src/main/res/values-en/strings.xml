@@ -146,7 +146,6 @@
     <string name="statistics_clear_title">Clear Statistics</string>
     <string name="statistics_clear_message">All statistics will be deleted. Continue?</string>
     <string name="statistics_cleared">Statistics cleared</string>
-</resources>
     
     <!-- Visual Editor Pro -->
     <string name="visual_editor_title">Visual Editor Pro</string>
@@ -233,3 +232,4 @@
     <string name="category_system">System</string>
     <string name="category_functions">Functions</string>
     <string name="category_special">Special</string>
+</resources>
