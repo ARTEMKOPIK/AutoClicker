@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.os.LocaleList
+import com.autoclicker.app.R
 import java.util.Locale
 
 /**
@@ -107,4 +108,3 @@ object LocaleManager {
         val englishName: String
     )
 }
-
