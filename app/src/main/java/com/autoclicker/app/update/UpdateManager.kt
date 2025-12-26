@@ -249,6 +249,8 @@ class UpdateManager(private val context: Context) {
     
     /**
      * Устанавливает скачанное обновление
+     * 
+     * КРИТИЧНО: Проверяет подпись APK перед установкой для защиты от подмены
      */
     fun installUpdate(filePath: String) {
         try {
@@ -277,6 +279,51 @@ class UpdateManager(private val context: Context) {
                 downloadStateListener?.invoke(UpdateDownloadState.Error("Файл не найден"))
                 return
             }
+            
+            // КРИТИЧНО: Проверяем подпись APK перед установкой
+            // Это защищает от установки поддельного APK если GitHub был скомпрометирован
+            com.autoclicker.app.util.CrashHandler.logInfo(
+                "UpdateManager",
+                "Verifying APK signature before installation..."
+            )
+            
+            val isSignatureValid = ApkSignatureVerifier.verifyApkSignature(context, file)
+            
+            if (!isSignatureValid) {
+                com.autoclicker.app.util.CrashHandler.logError(
+                    "UpdateManager",
+                    "🔴 SECURITY: APK signature verification FAILED! File: ${file.absolutePath}",
+                    null
+                )
+                downloadStateListener?.invoke(
+                    UpdateDownloadState.Error(
+                        "Ошибка безопасности: подпись APK не совпадает с приложением. " +
+                        "Обновление может быть поддельным и не будет установлено."
+                    )
+                )
+                
+                // Удаляем потенциально опасный файл
+                try {
+                    file.delete()
+                    com.autoclicker.app.util.CrashHandler.logInfo(
+                        "UpdateManager",
+                        "Deleted suspicious APK file"
+                    )
+                } catch (e: Exception) {
+                    com.autoclicker.app.util.CrashHandler.logError(
+                        "UpdateManager",
+                        "Failed to delete suspicious APK: ${e.message}",
+                        e
+                    )
+                }
+                
+                return
+            }
+            
+            com.autoclicker.app.util.CrashHandler.logInfo(
+                "UpdateManager",
+                "✅ APK signature verified successfully, proceeding with installation"
+            )
             
             val uri = FileProvider.getUriForFile(
                 context,
