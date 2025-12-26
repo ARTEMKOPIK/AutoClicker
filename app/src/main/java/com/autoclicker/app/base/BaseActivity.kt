@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.autoclicker.app.R
 import com.autoclicker.app.util.CrashHandler
+import com.autoclicker.app.util.ThemeManager
 
 /**
  * Базовый класс Activity с анимациями переходов и обработкой ошибок
@@ -13,6 +14,9 @@ import com.autoclicker.app.util.CrashHandler
 abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Применяем тему ПЕРЕД вызовом super.onCreate()
+        ThemeManager.applyTheme(this)
+        
         // Устанавливаем обработчик ошибок для UI потока этой Activity
         Thread.currentThread().setUncaughtExceptionHandler { thread, throwable ->
             CrashHandler.logCritical(
