@@ -20,6 +20,7 @@ import com.autoclicker.app.base.BaseActivity
 import com.autoclicker.app.service.ScreenCaptureService
 import com.autoclicker.app.update.UpdateChecker
 import com.autoclicker.app.util.ThemeManager
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsActivity : BaseActivity() {
 
@@ -58,6 +59,7 @@ class SettingsActivity : BaseActivity() {
 
         setupPermissionItems()
         setupThemeSelector()
+        setupAutoUpdateSwitch()
         setupVersionInfo()
     }
 
@@ -147,6 +149,27 @@ class SettingsActivity : BaseActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
                 // Ничего не делаем
             }
+        }
+    }
+
+    private fun setupAutoUpdateSwitch() {
+        val switchAutoUpdate = findViewById<SwitchMaterial>(R.id.switchAutoUpdate)
+        val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        
+        // Загружаем сохранённое состояние (по умолчанию включено)
+        val isAutoUpdateEnabled = prefs.getBoolean("auto_update_enabled", true)
+        switchAutoUpdate.isChecked = isAutoUpdateEnabled
+        
+        // Слушаем изменения
+        switchAutoUpdate.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean("auto_update_enabled", isChecked).apply()
+            
+            val message = if (isChecked) {
+                "Автообновление включено"
+            } else {
+                "Автообновление отключено"
+            }
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
     }
 

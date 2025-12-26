@@ -21,6 +21,14 @@ class UpdateChecker(private val activity: Activity) {
      * Проверяет обновления при запуске приложения
      */
     fun checkOnStartup() {
+        // Проверяем, включено ли автообновление
+        val prefs = activity.getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+        val isAutoUpdateEnabled = prefs.getBoolean("auto_update_enabled", true)
+        
+        if (!isAutoUpdateEnabled) {
+            return // Автообновление отключено
+        }
+        
         CoroutineScope(Dispatchers.Main).launch {
             val updateInfo = withContext(Dispatchers.IO) {
                 updateManager.checkForUpdate(force = false)
