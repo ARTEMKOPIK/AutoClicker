@@ -146,7 +146,6 @@
     <string name="statistics_clear_title">Очистить статистику</string>
     <string name="statistics_clear_message">Вся статистика будет удалена. Продолжить?</string>
     <string name="statistics_cleared">Статистика очищена</string>
-</resources>
     
     <!-- Visual Editor Pro -->
     <string name="visual_editor_title">Visual Editor Pro</string>
@@ -233,3 +232,4 @@
     <string name="category_special">Special</string>
     <string name="visual_editor_select_block">Выбор типа блока</string>
     <string name="category_all">Все</string>
+</resources>
