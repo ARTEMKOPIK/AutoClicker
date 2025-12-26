@@ -124,16 +124,47 @@ log("Скрипт завершён")"""
 
         scriptId = intent.getStringExtra("script_id")
         
-        // Проверяем, пришёл ли макрос
-        val macroScript = intent.getStringExtra("macro_script")
-        val macroActionsCount = intent.getIntExtra("macro_actions_count", 0)
-        
-        if (!macroScript.isNullOrEmpty() && macroActionsCount > 0) {
-            // Загружаем макрос как новый скрипт
-            loadMacroScript(macroScript, macroActionsCount)
+        // КРИТИЧНО: Восстанавливаем состояние после configuration changes (поворот экрана, etc)
+        if (savedInstanceState != null) {
+            // Восстанавливаем из сохранённого состояния
+            etName.setText(savedInstanceState.getString("script_name", ""))
+            etCode.setText(savedInstanceState.getString("script_code", ""))
+            hasUnsavedChanges = savedInstanceState.getBoolean("has_unsaved_changes", false)
+            initialCode = savedInstanceState.getString("initial_code", "")
+            initialName = savedInstanceState.getString("initial_name", "")
+            isSearchVisible = savedInstanceState.getBoolean("search_visible", false)
+            
+            // Восстанавливаем видимость панелей поиска
+            if (isSearchVisible) {
+                searchPanel.visibility = View.VISIBLE
+                replacePanel.visibility = View.VISIBLE
+            }
         } else {
-            loadScript()
+            // Первый запуск Activity - загружаем скрипт
+            // Проверяем, пришёл ли макрос
+            val macroScript = intent.getStringExtra("macro_script")
+            val macroActionsCount = intent.getIntExtra("macro_actions_count", 0)
+            
+            if (!macroScript.isNullOrEmpty() && macroActionsCount > 0) {
+                // Загружаем макрос как новый скрипт
+                loadMacroScript(macroScript, macroActionsCount)
+            } else {
+                loadScript()
+            }
         }
+    }
+    
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        
+        // КРИТИЧНО: Сохраняем состояние перед уничтожением Activity
+        // Без этого при повороте экрана весь несохранённый код ПОТЕРЯЕТСЯ
+        outState.putString("script_name", etName.text.toString())
+        outState.putString("script_code", etCode.text.toString())
+        outState.putBoolean("has_unsaved_changes", hasUnsavedChanges)
+        outState.putString("initial_code", initialCode)
+        outState.putString("initial_name", initialName)
+        outState.putBoolean("search_visible", isSearchVisible)
     }
     
     private fun loadMacroScript(macroScript: String, actionsCount: Int) {
