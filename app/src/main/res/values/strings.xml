@@ -235,7 +235,6 @@
     <string name="category_special">Special</string>
     <string name="visual_editor_select_block">Выбор типа блока</string>
     <string name="category_all">Все</string>
-</resources>
     
     <!-- Snippets Library -->
     <string name="snippets_library_title">Библиотека сниппетов</string>
@@ -295,3 +294,4 @@
     <string name="snippet_advanced_image_search_desc">Поиск и клик по изображению</string>
     <string name="snippet_advanced_multi_account_name">Мульти-аккаунты</string>
     <string name="snippet_advanced_multi_account_desc">Управление несколькими аккаунтами</string>
+</resources>

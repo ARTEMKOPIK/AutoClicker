@@ -235,7 +235,6 @@
     <string name="category_system">System</string>
     <string name="category_functions">Functions</string>
     <string name="category_special">Special</string>
-</resources>
     
     <!-- Snippets Library -->
     <string name="snippets_library_title">Snippets Library</string>
@@ -295,3 +294,4 @@
     <string name="snippet_advanced_image_search_desc">Find and click on image</string>
     <string name="snippet_advanced_multi_account_name">Multi-Account</string>
     <string name="snippet_advanced_multi_account_desc">Manage multiple accounts</string>
+</resources>
