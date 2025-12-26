@@ -1138,7 +1138,6 @@ class ScriptEngine(
         }
         log("Clipboard: $text")
     }
-}
 
     // ==================== AI-POWERED METHODS ====================
     
@@ -1321,3 +1320,4 @@ class ScriptEngine(
             }
         }
     }
+}
