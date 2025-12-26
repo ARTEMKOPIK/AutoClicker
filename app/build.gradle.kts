@@ -28,7 +28,7 @@ android {
         applicationId = "com.autoclicker.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 1110
+
         versionName = "1.1.1"
         
         // Crash reporting credentials (читаем из local.properties или environment)
