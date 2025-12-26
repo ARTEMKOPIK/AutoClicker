@@ -341,7 +341,6 @@ class UpdateDownloadService : Service() {
                 // Показываем notification об ошибке безопасности
                 val errorNotification = UpdateNotificationHelper.createErrorNotification(
                     this,
-                    versionName,
                     "Ошибка безопасности: подпись APK не совпадает"
                 )
                 UpdateNotificationHelper.updateNotification(this, errorNotification)
