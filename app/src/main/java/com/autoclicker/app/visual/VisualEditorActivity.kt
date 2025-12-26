@@ -257,7 +257,7 @@ class VisualEditorActivity : BaseActivity() {
     private fun showEditBlockDialog(block: ScriptBlock, position: Int) {
         val dialogView = layoutInflater.inflate(R.layout.dialog_edit_block, null)
         val tvBlockTitle = dialogView.findViewById<TextView>(R.id.tvBlockTitle)
-        val paramsContainer = dialogView.findViewById<LinearLayout>(R.id.paramsContainer)
+        val paramsContainer = dialogView.findViewById<LinearLayout>(R.id.layoutParameters)
         
         tvBlockTitle.text = "${block.type.icon} ${block.type.title}"
         

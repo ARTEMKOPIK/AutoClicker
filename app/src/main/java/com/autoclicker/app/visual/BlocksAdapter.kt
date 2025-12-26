@@ -1,12 +1,9 @@
 package com.autoclicker.app.visual
 
-import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.autoclicker.app.R
@@ -31,16 +28,12 @@ class BlocksAdapter(
     override fun getItemCount() = blocks.size
 
     inner class BlockViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val blockContainer: LinearLayout = view.findViewById(R.id.blockContainer)
-        private val tvIcon: TextView = view.findViewById(R.id.tvBlockIcon)
-        private val tvTitle: TextView = view.findViewById(R.id.tvBlockTitle)
+        private val tvTitle: TextView = view.findViewById(R.id.tvBlockName)
         private val tvParams: TextView = view.findViewById(R.id.tvBlockParams)
         private val btnDelete: ImageButton = view.findViewById(R.id.btnDeleteBlock)
-        private val childrenIndicator: View = view.findViewById(R.id.childrenIndicator)
 
         fun bind(block: ScriptBlock, position: Int) {
-            tvIcon.text = block.type.icon
-            tvTitle.text = block.type.title
+            tvTitle.text = "${block.type.icon} ${block.type.title}"
             
             // Показываем параметры
             val paramsText = block.params.entries
@@ -48,30 +41,6 @@ class BlocksAdapter(
                 .joinToString(" • ") { "${it.key}: ${it.value}" }
             tvParams.text = paramsText
             tvParams.visibility = if (paramsText.isEmpty()) View.GONE else View.VISIBLE
-            
-            // Цвет блока по категории
-            val color = try {
-                Color.parseColor(block.type.category.color)
-            } catch (e: Exception) {
-                Color.parseColor("#8B5CF6")
-            }
-            
-            (blockContainer.background as? GradientDrawable)?.apply {
-                setStroke(2, color)
-            } ?: run {
-                val drawable = GradientDrawable().apply {
-                    cornerRadius = 16f * itemView.context.resources.displayMetrics.density
-                    setColor(Color.parseColor("#1A1A24"))
-                    setStroke(2, color)
-                }
-                blockContainer.background = drawable
-            }
-            
-            // Индикатор вложенных блоков
-            childrenIndicator.visibility = if (block.type.hasChildren) View.VISIBLE else View.GONE
-            if (block.type.hasChildren) {
-                childrenIndicator.setBackgroundColor(color)
-            }
             
             // Клики
             itemView.setOnClickListener { onBlockClick(block, position) }
