@@ -8,6 +8,8 @@ import android.os.StrictMode
 import com.autoclicker.app.util.CrashHandler
 import com.autoclicker.app.util.HapticFeedback
 import com.autoclicker.app.util.NetworkUtils
+import com.autoclicker.app.util.NotificationHelper
+import com.autoclicker.app.util.PreferencesHelper
 import com.autoclicker.app.util.ThemeManager
 import java.io.File
 
@@ -30,6 +32,8 @@ class AutoClickerApp : Application() {
         // Инициализируем утилиты
         HapticFeedback.init(this)
         NetworkUtils.init(this)
+        NotificationHelper.init(this)
+        PreferencesHelper.init(this)
         
         // Применяем сохранённую тему
         ThemeManager.applyTheme(this)
