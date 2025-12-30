@@ -6,6 +6,8 @@ import android.content.Context
 import android.os.Process
 import android.os.StrictMode
 import com.autoclicker.app.util.CrashHandler
+import com.autoclicker.app.util.HapticFeedback
+import com.autoclicker.app.util.NetworkUtils
 import com.autoclicker.app.util.ThemeManager
 import java.io.File
 
@@ -25,6 +27,10 @@ class AutoClickerApp : Application() {
         // Инициализируем обработчик крашей ПЕРВЫМ
         CrashHandler.init(this)
         
+        // Инициализируем утилиты
+        HapticFeedback.init(this)
+        NetworkUtils.init(this)
+        
         // Применяем сохранённую тему
         ThemeManager.applyTheme(this)
         
@@ -36,6 +42,7 @@ class AutoClickerApp : Application() {
         
         // Отправляем информацию о запуске приложения
         CrashHandler.logInfo("AutoClickerApp", "🚀 Приложение запущено")
+        CrashHandler.logInfo("AutoClickerApp", "📶 ${NetworkUtils.getNetworkInfo()}")
     }
     
     private fun setupGlobalExceptionHandlers() {
@@ -77,6 +84,8 @@ class AutoClickerApp : Application() {
     override fun onLowMemory() {
         super.onLowMemory()
         CrashHandler.logWarning("AutoClickerApp", "⚠️ Мало памяти! Возможны проблемы")
+        // Очищаем кэш изображений при нехватке памяти
+        com.autoclicker.app.util.ImageCache.clear()
     }
     
     override fun onTrimMemory(level: Int) {
