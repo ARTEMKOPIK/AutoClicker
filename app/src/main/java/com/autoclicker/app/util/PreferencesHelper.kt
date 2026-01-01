@@ -13,7 +13,7 @@ object PreferencesHelper {
     
     private const val PREFS_NAME = "autoclicker_prefs"
     private lateinit var prefs: SharedPreferences
-    private val gson = Gson()
+    internal val gson = Gson()
     
     fun init(context: Context) {
         prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -249,4 +249,3 @@ object PreferencesHelper {
         return Editor()
     }
 }
-
