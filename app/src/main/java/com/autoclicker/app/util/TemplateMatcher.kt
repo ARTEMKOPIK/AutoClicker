@@ -44,22 +44,40 @@ class TemplateMatcher {
         }
         
         try {
+            val sourceWidth = source.width
+            val sourceHeight = source.height
+            val templateWidth = template.width
+            val templateHeight = template.height
+
             // Convert to grayscale for faster matching
             val sourceGray = toGrayscale(source)
             val templateGray = toGrayscale(template)
             
+            // Pre-calculate template statistics to avoid redundant calculations in the sliding window
+            val n = templateWidth * templateHeight
+            var templateSum = 0.0
+            var templateSumSq = 0.0
+            for (gray in templateGray) {
+                val g = gray.toDouble()
+                templateSum += g
+                templateSumSq += g * g
+            }
+            val templateMean = templateSum / n
+            val templateSumSqDiff = templateSumSq - n * templateMean * templateMean
+
             // Perform normalized cross-correlation
             val matches = mutableListOf<MatchResult>()
-            val searchWidth = source.width - template.width + 1
-            val searchHeight = source.height - template.height + 1
+            val searchWidth = sourceWidth - templateWidth + 1
+            val searchHeight = sourceHeight - templateHeight + 1
             
             // Sliding window search
             for (y in 0 until searchHeight) {
                 for (x in 0 until searchWidth) {
                     val confidence = computeNCC(
-                        sourceGray, templateGray,
+                        sourceGray, sourceWidth,
+                        templateGray, templateWidth, templateHeight,
                         x, y,
-                        template.width, template.height
+                        templateMean, templateSumSqDiff
                     )
                     
                     if (confidence >= threshold) {
@@ -88,21 +106,24 @@ class TemplateMatcher {
     
     /**
      * Convert bitmap to grayscale array for faster processing.
+     * Optimized using bitwise operations and fixed-point arithmetic.
      */
     private fun toGrayscale(bitmap: Bitmap): IntArray {
         val width = bitmap.width
         val height = bitmap.height
-        val pixels = IntArray(width * height)
+        val size = width * height
+        val pixels = IntArray(size)
         bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
         
-        val gray = IntArray(width * height)
-        for (i in pixels.indices) {
+        val gray = IntArray(size)
+        for (i in 0 until size) {
             val pixel = pixels[i]
-            val r = Color.red(pixel)
-            val g = Color.green(pixel)
-            val b = Color.blue(pixel)
-            // Standard grayscale conversion formula
-            gray[i] = (0.299 * r + 0.587 * g + 0.114 * b).toInt()
+            val r = (pixel shr 16) and 0xFF
+            val g = (pixel shr 8) and 0xFF
+            val b = pixel and 0xFF
+            // Optimized formula: (77*R + 151*G + 28*B) / 256
+            // This is faster than floating point math and avoids function calls
+            gray[i] = (r * 77 + g * 151 + b * 28) shr 8
         }
         
         return gray
@@ -110,70 +131,53 @@ class TemplateMatcher {
     
     /**
      * Compute Normalized Cross-Correlation between template and source region.
-     * 
-     * NCC formula: sum((source[i] - mean_source) * (template[i] - mean_template)) / 
-     *              (std_source * std_template * N)
+     * Optimized to perform all calculations in a single pass using the algebraic formula:
+     * sum((s - s_mean)(t - t_mean)) = sum(s*t) - n * s_mean * t_mean
      * 
      * @return Confidence value between -1.0 and 1.0 (normalized to 0.0-1.0)
      */
     private fun computeNCC(
         source: IntArray,
+        sourceWidth: Int,
         template: IntArray,
+        templateWidth: Int,
+        templateHeight: Int,
         startX: Int,
         startY: Int,
-        templateWidth: Int,
-        templateHeight: Int
+        templateMean: Double,
+        templateSumSqDiff: Double
     ): Float {
-        val sourceWidth = kotlin.math.sqrt(source.size.toDouble()).toInt()
         val n = templateWidth * templateHeight
         
-        // Compute means
-        var sourceMean = 0.0
-        var templateMean = 0.0
+        var dotProduct = 0.0
+        var sourceSum = 0.0
+        var sourceSumSq = 0.0
         
         for (ty in 0 until templateHeight) {
+            val sOffset = (startY + ty) * sourceWidth + startX
+            val tOffset = ty * templateWidth
             for (tx in 0 until templateWidth) {
-                val sx = startX + tx
-                val sy = startY + ty
-                val sourceIdx = sy * sourceWidth + sx
-                val templateIdx = ty * templateWidth + tx
+                val s = source[sOffset + tx].toDouble()
+                val t = template[tOffset + tx].toDouble()
                 
-                sourceMean += source[sourceIdx]
-                templateMean += template[templateIdx]
+                dotProduct += s * t
+                sourceSum += s
+                sourceSumSq += s * s
             }
         }
         
-        sourceMean /= n
-        templateMean /= n
-        
-        // Compute standard deviations and cross-correlation
-        var numerator = 0.0
-        var sourceVar = 0.0
-        var templateVar = 0.0
-        
-        for (ty in 0 until templateHeight) {
-            for (tx in 0 until templateWidth) {
-                val sx = startX + tx
-                val sy = startY + ty
-                val sourceIdx = sy * sourceWidth + sx
-                val templateIdx = ty * templateWidth + tx
-                
-                val sourceDiff = source[sourceIdx] - sourceMean
-                val templateDiff = template[templateIdx] - templateMean
-                
-                numerator += sourceDiff * templateDiff
-                sourceVar += sourceDiff * sourceDiff
-                templateVar += templateDiff * templateDiff
-            }
-        }
+        val sourceMean = sourceSum / n
+        val sourceSumSqDiff = sourceSumSq - n * sourceMean * sourceMean
         
         // Avoid division by zero
-        if (sourceVar == 0.0 || templateVar == 0.0) {
+        if (sourceSumSqDiff <= 0.0 || templateSumSqDiff <= 0.0) {
             return 0f
         }
         
-        val denominator = sqrt(sourceVar * templateVar)
-        val ncc = numerator / denominator
+        val numerator = dotProduct - n * sourceMean * templateMean
+        val denominator = sqrt(sourceSumSqDiff * templateSumSqDiff)
+
+        val ncc = (numerator / denominator).coerceIn(-1.0, 1.0)
         
         // Normalize to 0.0-1.0 range (NCC is in -1.0 to 1.0)
         return ((ncc + 1.0) / 2.0).toFloat()
