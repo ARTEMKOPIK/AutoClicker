@@ -132,6 +132,8 @@
     <string name="main_stop">Остановить всё</string>
     <string name="main_home">Домой</string>
     <string name="main_start_panel">Запуск панели</string>
+    <string name="accessibility_settings">Настройки</string>
+    <string name="accessibility_status_card">Статус разрешений. Нажмите для настройки.</string>
     
     <!-- Statistics -->
     <string name="statistics_title">Статистика</string>

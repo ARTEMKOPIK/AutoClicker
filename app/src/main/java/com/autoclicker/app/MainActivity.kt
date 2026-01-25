@@ -21,6 +21,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import com.autoclicker.app.base.BaseActivity
+import com.autoclicker.app.util.HapticFeedback
 import com.autoclicker.app.service.ColorPickerService
 import com.autoclicker.app.service.FloatingWindowService
 import com.autoclicker.app.service.ScreenCaptureService
@@ -80,6 +81,7 @@ class MainActivity : BaseActivity() {
     private fun setupButtons() {
         // Скрипты
         findViewById<LinearLayout>(R.id.btnScripts).setOnClickListener {
+            HapticFeedback.light(it)
             try {
                 startActivity(Intent(this, ScriptListActivity::class.java))
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -91,6 +93,7 @@ class MainActivity : BaseActivity() {
 
         // Новый скрипт
         findViewById<LinearLayout>(R.id.btnNewScript).setOnClickListener {
+            HapticFeedback.light(it)
             try {
                 startActivity(Intent(this, ScriptEditorActivity::class.java))
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -102,6 +105,7 @@ class MainActivity : BaseActivity() {
 
         // Визуальный редактор
         findViewById<LinearLayout>(R.id.btnVisualEditor).setOnClickListener {
+            HapticFeedback.light(it)
             try {
                 startActivity(Intent(this, com.autoclicker.app.visual.VisualEditorActivity::class.java))
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -146,6 +150,7 @@ class MainActivity : BaseActivity() {
 
         // Запуск панели (FAB)
         findViewById<FloatingActionButton>(R.id.btnStartPanel).setOnClickListener {
+            HapticFeedback.light(it)
             try {
                 if (checkPermissions()) {
                     FloatingWindowService.startService(this)
@@ -166,6 +171,7 @@ class MainActivity : BaseActivity() {
 
         // Настройки
         findViewById<ImageView>(R.id.btnSettings).setOnClickListener {
+            HapticFeedback.light(it)
             startActivity(Intent(this, SettingsActivity::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
@@ -218,6 +224,7 @@ class MainActivity : BaseActivity() {
 
         // Остановить
         findViewById<LinearLayout>(R.id.btnStop).setOnClickListener {
+            HapticFeedback.heavy(it)
             FloatingWindowService.stopService(this)
             ColorPickerService.stopService(this)
             ScreenCaptureService.stopService(this)
@@ -227,6 +234,7 @@ class MainActivity : BaseActivity() {
         
         // Status card click - go to settings
         statusCard.setOnClickListener {
+            HapticFeedback.light(it)
             startActivity(Intent(this, SettingsActivity::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }

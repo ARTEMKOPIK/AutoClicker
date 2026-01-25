@@ -132,6 +132,8 @@
     <string name="main_stop">Stop All</string>
     <string name="main_home">Home</string>
     <string name="main_start_panel">Start Panel</string>
+    <string name="accessibility_settings">Settings</string>
+    <string name="accessibility_status_card">Permission status. Tap to configure.</string>
     
     <!-- Statistics -->
     <string name="statistics_title">Statistics</string>
