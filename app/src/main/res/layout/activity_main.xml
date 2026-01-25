@@ -59,7 +59,7 @@
                     android:padding="12dp"
                     android:src="@drawable/ic_settings"
                     android:background="@drawable/bg_icon_button"
-                    android:contentDescription="Settings" />
+                    android:contentDescription="@string/accessibility_settings" />
             </LinearLayout>
 
             <!-- Status Card -->
@@ -67,6 +67,8 @@
                 android:id="@+id/statusCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/accessibility_status_card"
+                android:focusable="true"
                 android:background="@drawable/bg_status_banner"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
@@ -142,7 +144,8 @@
                     android:gravity="center"
                     android:padding="16dp"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:contentDescription="@string/main_scripts">
 
                     <ImageView
                         android:layout_width="36dp"
@@ -172,7 +175,8 @@
                     android:gravity="center"
                     android:padding="16dp"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:contentDescription="@string/main_new_script">
 
                     <ImageView
                         android:layout_width="36dp"
@@ -202,7 +206,8 @@
                 android:gravity="center_vertical"
                 android:paddingHorizontal="20dp"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:contentDescription="@string/main_visual_editor">
 
                 <TextView
                     android:layout_width="48dp"
@@ -546,7 +551,8 @@
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:contentDescription="@string/main_stop">
 
                 <ImageView
                     android:layout_width="20dp"
@@ -578,6 +584,7 @@
         app:backgroundTint="@color/primary"
         app:tint="@color/text_on_primary"
         app:fabSize="normal"
-        app:elevation="8dp" />
+        app:elevation="8dp"
+        android:contentDescription="@string/main_start_panel" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
