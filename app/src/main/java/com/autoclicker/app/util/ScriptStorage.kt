@@ -101,13 +101,11 @@ class ScriptStorage(context: Context) {
             val type = object : TypeToken<List<Script>>() {}.type
             gson.fromJson<List<Script>>(json, type) ?: emptyList()
         } catch (e: Exception) {
-            // Log corrupted data with comprehensive context
+            // Log corrupted data without leaking sensitive content
             val errorMessage = """
                 ScriptStorage data corruption detected!
                 
                 JSON Length: ${json.length}
-                JSON Preview: ${json.take(200)}
-                First 500 chars (escaped): ${json.take(500).replace("\n", "\\n")}
                 Error: ${e.javaClass.simpleName}: ${e.message}
                 Stack Trace: ${e.stackTrace.take(5).joinToString("\n")}
             """.trimIndent()

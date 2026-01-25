@@ -157,12 +157,11 @@ class ScriptScheduler(private val context: Context) {
             val type = object : TypeToken<List<ScheduledTask>>() {}.type
             gson.fromJson<List<ScheduledTask>>(json, type) ?: emptyList()
         } catch (e: Exception) {
-            // Log corrupted data with context - CRITICAL for debugging data loss
+            // Log corrupted data without leaking sensitive content
             val errorMessage = """
                 ScriptScheduler data corruption detected!
                 
                 JSON Length: ${json.length}
-                JSON Preview: ${json.take(200)}
                 Error: ${e.javaClass.simpleName}: ${e.message}
             """.trimIndent()
             
