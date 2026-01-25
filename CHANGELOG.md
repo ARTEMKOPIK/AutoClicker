@@ -1,4 +1,4 @@
-## [1.1.7] - 2026-01-25\n\n### 📝 Другое
-- 🎨 Palette: Micro-UX and accessibility enhancements for Main Dashboard
+## [1.1.8] - 2026-01-25\n\n### 📝 Другое
+- ⚡ Bolt: Optimize TemplateMatcher performance and fix width bug
 
 
