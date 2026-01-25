@@ -28,8 +28,8 @@ android {
         applicationId = "com.autoclicker.app"
         minSdk = 24
         targetSdk = 35
-        versionCode = 118
-        versionName = "1.1.8"
+        versionCode = 119
+        versionName = "1.1.9"
         
         // Crash reporting credentials (читаем из local.properties или environment)
         buildConfigField("String", "CRASH_BOT_TOKEN", "\"${getConfigValue("CRASH_BOT_TOKEN")}\"")

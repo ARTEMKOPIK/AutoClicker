@@ -1,4 +1,4 @@
-## [1.1.8] - 2026-01-25\n\n### 📝 Другое
-- ⚡ Bolt: Optimize TemplateMatcher performance and fix width bug
+## [1.1.9] - 2026-01-25\n\n### 📝 Другое
+- 🛡️ Sentinel: Fix sensitive data leaks in logs and remove hardcoded keystore
 
 
