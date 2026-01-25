@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.autoclicker.app.base.BaseActivity
+import com.autoclicker.app.util.HapticFeedback
 import com.autoclicker.app.util.ScriptExporter
 import com.autoclicker.app.util.ScriptStorage
 import java.text.SimpleDateFormat
@@ -105,30 +106,38 @@ class ScriptListActivity : BaseActivity() {
 
     private fun setupListeners() {
         // Назад
-        findViewById<ImageView>(R.id.btnBack).setOnClickListener { finish() }
+        findViewById<ImageView>(R.id.btnBack).setOnClickListener {
+            HapticFeedback.light(it)
+            finish()
+        }
 
         // Добавить скрипт
         findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
+            HapticFeedback.light(it)
             startActivity(Intent(this, ScriptEditorActivity::class.java))
         }
 
         // Поиск
         findViewById<ImageView>(R.id.btnSearch).setOnClickListener {
+            HapticFeedback.light(it)
             toggleSearch()
         }
 
         // Закрыть поиск
         findViewById<ImageView>(R.id.btnCloseSearch).setOnClickListener {
+            HapticFeedback.light(it)
             toggleSearch()
         }
 
         // Сортировка
         findViewById<ImageView>(R.id.btnSort).setOnClickListener { view ->
+            HapticFeedback.light(view)
             showSortMenu(view)
         }
 
         // Меню (импорт)
         findViewById<ImageView>(R.id.btnMenu).setOnClickListener { view ->
+            HapticFeedback.light(view)
             showImportMenu(view)
         }
 
@@ -480,7 +489,10 @@ class ScriptListActivity : BaseActivity() {
                 tvName.text = script.name
                 tvDate.text = script.date
 
-                itemView.setOnClickListener { onItemClick(script) }
+                itemView.setOnClickListener {
+                    HapticFeedback.light(it)
+                    onItemClick(script)
+                }
                 itemView.setOnLongClickListener {
                     showScriptMenu(script)
                     true

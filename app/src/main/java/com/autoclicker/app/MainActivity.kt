@@ -117,11 +117,13 @@ class MainActivity : BaseActivity() {
 
         // Инструкция
         findViewById<LinearLayout>(R.id.btnHelp).setOnClickListener {
+            HapticFeedback.light(it)
             showHelpDialog()
         }
 
         // Скриншот
         findViewById<LinearLayout>(R.id.btnScreenshot).setOnClickListener {
+            HapticFeedback.light(it)
             if (!ScreenCaptureService.isRunning) {
                 requestScreenCapture()
             } else {
@@ -131,6 +133,7 @@ class MainActivity : BaseActivity() {
 
         // Пипетка
         findViewById<LinearLayout>(R.id.btnColorPicker).setOnClickListener {
+            HapticFeedback.light(it)
             try {
                 if (checkPermissions()) {
                     ColorPickerService.startService(this)
@@ -144,6 +147,7 @@ class MainActivity : BaseActivity() {
 
         // Telegram
         findViewById<LinearLayout>(R.id.btnTelegram).setOnClickListener {
+            HapticFeedback.light(it)
             startActivity(Intent(this, TelegramSettingsActivity::class.java))
             overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
@@ -164,6 +168,7 @@ class MainActivity : BaseActivity() {
 
         // Домой
         findViewById<LinearLayout>(R.id.btnHome).setOnClickListener {
+            HapticFeedback.light(it)
             val intent = Intent(Intent.ACTION_MAIN)
             intent.addCategory(Intent.CATEGORY_HOME)
             startActivity(intent)
@@ -178,6 +183,7 @@ class MainActivity : BaseActivity() {
 
         // Планировщик
         findViewById<LinearLayout>(R.id.btnScheduler).setOnClickListener {
+            HapticFeedback.light(it)
             try {
                 startActivity(Intent(this, SchedulerActivity::class.java))
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -189,6 +195,7 @@ class MainActivity : BaseActivity() {
 
         // Запись макроса
         findViewById<LinearLayout>(R.id.btnMacro).setOnClickListener {
+            HapticFeedback.light(it)
             try {
                 if (checkPermissions()) {
                     com.autoclicker.app.service.MacroRecorderService.startService(this)
@@ -202,6 +209,7 @@ class MainActivity : BaseActivity() {
 
         // Профили
         findViewById<LinearLayout>(R.id.btnProfiles).setOnClickListener {
+            HapticFeedback.light(it)
             try {
                 startActivity(Intent(this, ProfilesActivity::class.java))
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
@@ -213,6 +221,7 @@ class MainActivity : BaseActivity() {
 
         // Логи
         findViewById<LinearLayout>(R.id.btnLogs)?.setOnClickListener {
+            HapticFeedback.light(it)
             try {
                 startActivity(Intent(this, LogsActivity::class.java))
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
