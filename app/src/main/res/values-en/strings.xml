@@ -29,6 +29,7 @@
     <string name="action_menu">Menu</string>
     <string name="action_copy">Copy</string>
     <string name="action_close">Close</string>
+    <string name="action_back">Back</string>
     
     <!-- Messages -->
     <string name="msg_saved">Saved</string>

@@ -62,6 +62,7 @@
         android:padding="10dp"
         android:src="@drawable/ic_delete"
         android:background="@drawable/bg_icon_button"
-        app:tint="@color/error" />
+        app:tint="@color/error"
+        android:contentDescription="@string/action_delete" />
 
 </LinearLayout>

@@ -284,7 +284,8 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:contentDescription="@string/main_screenshot">
 
                     <ImageView
                         android:layout_width="28dp"
@@ -312,7 +313,8 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:contentDescription="@string/main_color_picker">
 
                     <ImageView
                         android:layout_width="28dp"
@@ -340,7 +342,8 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:contentDescription="@string/main_macro">
 
                     <ImageView
                         android:layout_width="28dp"
@@ -376,7 +379,8 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:contentDescription="@string/main_scheduler">
 
                     <ImageView
                         android:layout_width="28dp"
@@ -404,7 +408,8 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:contentDescription="@string/main_profiles">
 
                     <ImageView
                         android:layout_width="28dp"
@@ -432,7 +437,8 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:contentDescription="@string/main_telegram">
 
                     <ImageView
                         android:layout_width="28dp"
@@ -468,7 +474,8 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:contentDescription="@string/main_help">
 
                     <ImageView
                         android:layout_width="28dp"
@@ -496,7 +503,8 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:contentDescription="@string/main_logs">
 
                     <ImageView
                         android:layout_width="28dp"
@@ -524,7 +532,8 @@
                     android:gravity="center"
                     android:padding="12dp"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    android:contentDescription="@string/main_home">
 
                     <ImageView
                         android:layout_width="28dp"

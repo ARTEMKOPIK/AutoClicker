@@ -27,7 +27,7 @@
                 android:padding="10dp"
                 android:src="@drawable/ic_back"
                 android:background="@drawable/bg_icon_button"
-                android:contentDescription="Back"
+                android:contentDescription="@string/action_back"
                 app:tint="@color/text_primary" />
 
             <TextView
@@ -48,7 +48,7 @@
                 android:padding="10dp"
                 android:src="@drawable/ic_search"
                 android:background="@drawable/bg_icon_button"
-                android:contentDescription="Search"
+                android:contentDescription="@string/action_search"
                 app:tint="@color/text_secondary" />
 
             <ImageView
@@ -59,7 +59,7 @@
                 android:src="@drawable/ic_sort"
                 android:background="@drawable/bg_icon_button"
                 android:layout_marginStart="4dp"
-                android:contentDescription="Sort"
+                android:contentDescription="@string/action_sort"
                 app:tint="@color/text_secondary" />
 
             <ImageView
@@ -70,7 +70,7 @@
                 android:src="@drawable/ic_menu"
                 android:background="@drawable/bg_icon_button"
                 android:layout_marginStart="4dp"
-                android:contentDescription="Menu"
+                android:contentDescription="@string/action_menu"
                 app:tint="@color/text_secondary" />
         </LinearLayout>
 
@@ -112,7 +112,7 @@
                 android:src="@drawable/ic_close"
                 android:background="@drawable/bg_icon_button"
                 android:layout_marginStart="8dp"
-                android:contentDescription="Close"
+                android:contentDescription="@string/action_close"
                 app:tint="@color/text_secondary" />
         </LinearLayout>
 
@@ -154,6 +154,7 @@
         app:backgroundTint="@color/primary"
         app:tint="@color/text_on_primary"
         app:fabSize="normal"
-        app:elevation="8dp" />
+        app:elevation="8dp"
+        android:contentDescription="@string/action_add_script" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
