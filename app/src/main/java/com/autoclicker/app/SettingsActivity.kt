@@ -126,27 +126,18 @@ class SettingsActivity : BaseActivity() {
             spinner.setSelection(currentIndex)
         }
         
-        // Флаг для игнорирования первого срабатывания при инициализации
-        var isInitialSelection = true
-        
         // Обработчик выбора языка
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                // Игнорируем первое срабатывание при установке начальной позиции
-                if (isInitialSelection) {
-                    isInitialSelection = false
-                    return
-                }
-                
                 val selectedLanguage = languages[position].first
                 val currentSavedLanguage = LocaleManager.getLanguage(this@SettingsActivity)
                 
                 // Проверяем, изменился ли язык
                 if (selectedLanguage != currentSavedLanguage) {
                     LocaleManager.setLanguage(this@SettingsActivity, selectedLanguage)
-                    
-                    // Перезапускаем активити для применения языка
-                    recreate()
+
+                    // Перезапускаем экран приложения, чтобы язык применился везде
+                    restartAppUi()
                 }
             }
             
@@ -173,27 +164,18 @@ class SettingsActivity : BaseActivity() {
             spinner.setSelection(currentIndex)
         }
         
-        // Флаг для игнорирования первого срабатывания при инициализации
-        var isInitialSelection = true
-        
         // Обработчик выбора темы
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                // Игнорируем первое срабатывание при установке начальной позиции
-                if (isInitialSelection) {
-                    isInitialSelection = false
-                    return
-                }
-                
                 val selectedTheme = themes[position].first
                 val currentSavedTheme = ThemeManager.getThemeMode(this@SettingsActivity)
                 
                 // Проверяем, изменилась ли тема
                 if (selectedTheme != currentSavedTheme) {
                     ThemeManager.setThemeMode(this@SettingsActivity, selectedTheme)
-                    
-                    // Перезапускаем активити для применения темы
-                    recreate()
+
+                    // Перезапускаем экран приложения, чтобы тема применилась везде
+                    restartAppUi()
                 }
             }
             
@@ -201,6 +183,14 @@ class SettingsActivity : BaseActivity() {
                 // Ничего не делаем
             }
         }
+    }
+
+    private fun restartAppUi() {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        }
+        startActivity(intent)
+        finishAffinity()
     }
 
     private fun setupVersionInfo() {
