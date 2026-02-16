@@ -1,4 +1,6 @@
-## [1.1.10] - 2026-01-25\n\n### 📝 Другое
+## [1.1.10] - 2026-01-25
+
+### 📝 Другое
 - 🎨 Palette: Improve micro-UX with haptic feedback and accessibility labels
 
 

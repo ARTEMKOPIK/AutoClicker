@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-1.1.4-blue.svg)
+![Version](https://img.shields.io/badge/version-1.1.10-blue.svg)
 ![Android](https://img.shields.io/badge/Android-24%2B-green.svg)
 ![Kotlin](https://img.shields.io/badge/Kotlin-100%25-purple.svg)
 
@@ -71,7 +71,7 @@ AutoClicker - это профессиональное приложение дл�
 - com.squareup.okhttp3:okhttp:4.12.0
 - com.google.code.gson:gson:2.11.0
 
-### Новые утилиты (v1.1.4+)
+### Новые утилиты (v1.1.10+)
 
 #### ⚡ PerformanceMonitor
 Мониторинг производительности операций

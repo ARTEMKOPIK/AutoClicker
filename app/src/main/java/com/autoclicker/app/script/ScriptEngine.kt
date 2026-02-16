@@ -767,6 +767,16 @@ class ScriptEngine(
         return true
     }
 
+
+    /**
+     * Clamp tap coordinates to actual clickable screen range [0, width-1] x [0, height-1].
+     */
+    private fun sanitizeTapCoordinates(x: Float, y: Float): Pair<Float, Float> {
+        val maxX = (Constants.FALLBACK_SCREEN_WIDTH - 1).toFloat()
+        val maxY = (Constants.FALLBACK_SCREEN_HEIGHT - 1).toFloat()
+        return x.coerceIn(0f, maxX) to y.coerceIn(0f, maxY)
+    }
+
     /**
      * Validate sleep duration is non-negative.
      * 
@@ -809,8 +819,10 @@ class ScriptEngine(
             log("⚠️ Accessibility Service недоступен")
             return
         }
-        service.click(x, y)
-        log("Click: ${x.toInt()}, ${y.toInt()}")
+
+        val (safeX, safeY) = sanitizeTapCoordinates(x, y)
+        service.click(safeX, safeY)
+        log("Click: ${safeX.toInt()}, ${safeY.toInt()}")
     }
 
     fun longClick(x: Float, y: Float, duration: Long = 500L) {
@@ -833,8 +845,10 @@ class ScriptEngine(
             log("⚠️ Accessibility Service недоступен")
             return
         }
-        service.longClick(x, y, duration)
-        log("LongClick: ${x.toInt()}, ${y.toInt()} (${duration}ms)")
+
+        val (safeX, safeY) = sanitizeTapCoordinates(x, y)
+        service.longClick(safeX, safeY, duration)
+        log("LongClick: ${safeX.toInt()}, ${safeY.toInt()} (${duration}ms)")
     }
 
     fun swipe(x1: Float, y1: Float, x2: Float, y2: Float, duration: Long = 300L) {
@@ -882,12 +896,13 @@ class ScriptEngine(
             log("⚠️ Accessibility Service недоступен")
             return
         }
+        val (safeX, safeY) = sanitizeTapCoordinates(x, y)
         for (i in 0 until count) {
             if (EXIT || Thread.currentThread().isInterrupted) return
-            service.click(x, y)
+            service.click(safeX, safeY)
             if (i < count - 1) sleep(delay)
         }
-        log("Tap: ${x.toInt()}, ${y.toInt()} x$count")
+        log("Tap: ${safeX.toInt()}, ${safeY.toInt()} x$count")
     }
 
     fun sleep(ms: Long) {

@@ -40,7 +40,7 @@ object InputValidator {
      * Проверить координаты на валидность
      */
     fun isValidCoordinate(x: Float, y: Float, screenWidth: Int, screenHeight: Int): Boolean {
-        return x >= 0 && x <= screenWidth && y >= 0 && y <= screenHeight
+        return screenWidth > 0 && screenHeight > 0 && x >= 0 && x < screenWidth && y >= 0 && y < screenHeight
     }
     
     /**
