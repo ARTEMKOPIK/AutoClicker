@@ -85,6 +85,11 @@ object JsonEscaper {
             base = base.dropLast(1)
         }
 
+        // Do not leave a dangling high surrogate at the end (emoji/Unicode safety).
+        if (base.isNotEmpty() && base.last().isHighSurrogate()) {
+            base = base.dropLast(1)
+        }
+
         return base + "..."
     }
 }

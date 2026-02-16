@@ -55,6 +55,15 @@ class JsonEscaperTest {
         assertTrue(result.contains("\\\"yes\\\""))
     }
 
+
+    @Test
+    fun `escapeAndTruncate handles emoji near truncation boundary`() {
+        val input = "abcd😀xyz"
+        val result = JsonEscaper.escapeAndTruncate(input, 8)
+
+        assertEquals("abcd...", result)
+        assertFalse("Result base should not end with dangling high surrogate", result.dropLast(3).lastOrNull()?.isHighSurrogate() == true)
+    }
     private fun hasOddTrailingBackslashes(value: String): Boolean {
         var count = 0
         for (i in value.length - 1 downTo 0) {
