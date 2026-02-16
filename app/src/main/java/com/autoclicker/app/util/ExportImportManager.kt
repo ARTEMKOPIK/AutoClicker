@@ -169,7 +169,7 @@ object ExportImportManager {
             val scripts = gson.fromJson(json, Array<ScriptStorage.Script>::class.java).toList()
             val storage = ScriptStorage(context)
             val existingScripts = storage.getAllScripts()
-            val existingIds = existingScripts.map { it.id }.toSet()
+            val usedIds = existingScripts.map { it.id }.toMutableSet()
             
             scripts.mapNotNull { script ->
                 // Проверяем базовые поля
@@ -179,11 +179,7 @@ object ExportImportManager {
                 }
                 
                 // Обрабатываем коллизию ID
-                if (existingIds.contains(script.id)) {
-                    script.copy(id = UUID.randomUUID().toString())
-                } else {
-                    script
-                }
+                ensureUniqueId(script, usedIds)
             }
         } catch (e: JsonSyntaxException) {
             CrashHandler.logError("ExportImportManager", "Invalid JSON array format", e)
@@ -192,6 +188,26 @@ object ExportImportManager {
             CrashHandler.logError("ExportImportManager", "Failed to import scripts", e)
             emptyList()
         }
+    }
+
+    /**
+     * Гарантирует уникальный ID скрипта в рамках текущего импорта.
+     *
+     * Важно: учитываем не только уже сохраненные скрипты, но и дубликаты
+     * внутри самого импортируемого JSON-массива.
+     */
+    private fun ensureUniqueId(
+        script: ScriptStorage.Script,
+        usedIds: MutableSet<String>
+    ): ScriptStorage.Script {
+        var candidate = script
+
+        while (usedIds.contains(candidate.id)) {
+            candidate = candidate.copy(id = UUID.randomUUID().toString())
+        }
+
+        usedIds.add(candidate.id)
+        return candidate
     }
     
     /**
