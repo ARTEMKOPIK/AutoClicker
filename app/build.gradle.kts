@@ -92,4 +92,6 @@ dependencies {
     
     // QR Code сканирование
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
+
+    testImplementation("junit:junit:4.13.2")
 }

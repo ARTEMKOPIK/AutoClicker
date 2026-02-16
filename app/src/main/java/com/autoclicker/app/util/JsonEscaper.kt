@@ -60,14 +60,31 @@ object JsonEscaper {
      * @return The escaped and possibly truncated text
      */
     fun escapeAndTruncate(text: String, maxLength: Int): String {
+        if (maxLength <= 0) return ""
+
         val escaped = escape(text)
-        return if (escaped.length > maxLength) {
-            // Ensure we leave space for "..." suffix
-            val safeLength = maxLength.coerceAtLeast(3)
-            val truncated = escaped.substring(0, safeLength - 3)
-            truncated + "..."
-        } else {
-            escaped
+        if (escaped.length <= maxLength) return escaped
+
+        if (maxLength < 4) {
+            return "...".take(maxLength)
         }
+
+        // Reserve space for ellipsis and safely trim escaped sequences.
+        var base = escaped.substring(0, maxLength - 3)
+
+        // If base ends with odd number of trailing backslashes, we cut inside an escape sequence.
+        var trailingBackslashes = 0
+        for (i in base.length - 1 downTo 0) {
+            if (base[i] == '\\') {
+                trailingBackslashes++
+            } else {
+                break
+            }
+        }
+        if (trailingBackslashes % 2 == 1 && base.isNotEmpty()) {
+            base = base.dropLast(1)
+        }
+
+        return base + "..."
     }
 }
