@@ -58,12 +58,17 @@ object NetworkUtils {
             }
         } else {
             @Suppress("DEPRECATION")
-            when (cm.activeNetworkInfo?.type) {
-                ConnectivityManager.TYPE_WIFI -> NetworkType.WIFI
-                ConnectivityManager.TYPE_MOBILE -> NetworkType.MOBILE
-                ConnectivityManager.TYPE_ETHERNET -> NetworkType.ETHERNET
-                else -> NetworkType.OTHER
-            }
+            mapLegacyNetworkType(cm.activeNetworkInfo?.type)
+        }
+    }
+
+    internal fun mapLegacyNetworkType(networkType: Int?): NetworkType {
+        return when (networkType) {
+            null -> NetworkType.NONE
+            ConnectivityManager.TYPE_WIFI -> NetworkType.WIFI
+            ConnectivityManager.TYPE_MOBILE -> NetworkType.MOBILE
+            ConnectivityManager.TYPE_ETHERNET -> NetworkType.ETHERNET
+            else -> NetworkType.OTHER
         }
     }
     
