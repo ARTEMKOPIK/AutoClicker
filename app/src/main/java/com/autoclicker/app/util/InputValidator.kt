@@ -1,5 +1,6 @@
 package com.autoclicker.app.util
 
+import android.graphics.Color
 import android.widget.EditText
 
 /**
@@ -41,6 +42,13 @@ object InputValidator {
      */
     fun isValidCoordinate(x: Float, y: Float, screenWidth: Int, screenHeight: Int): Boolean {
         return x >= 0 && x <= screenWidth && y >= 0 && y <= screenHeight
+    }
+    
+    /**
+     * Проверить координаты на валидность (Int version)
+     */
+    fun isValidCoordinate(x: Int, y: Int, screenWidth: Int, screenHeight: Int): Boolean {
+        return x >= 0 && x < screenWidth && y >= 0 && y < screenHeight
     }
     
     /**
@@ -189,4 +197,65 @@ object InputValidator {
         }
     }
 }
+
+/**
+ * Extension functions for coordinate and parameter validation
+ */
+object ValidationUtils {
+    
+    /**
+     * Check if coordinates are valid within screen bounds
+     */
+    fun isValidCoordinate(x: Int, y: Int, screenWidth: Int, screenHeight: Int): Boolean {
+        return x >= 0 && x < screenWidth && y >= 0 && y < screenHeight
+    }
+    
+    /**
+     * Check if sleep duration is valid (non-negative)
+     */
+    fun isValidSleepDuration(duration: Long): Boolean {
+        return duration >= 0
+    }
+    
+    /**
+     * Clamp coordinate value to valid range
+     */
+    fun clampCoordinate(value: Int, min: Int, max: Int): Int {
+        return value.coerceIn(min, max)
+    }
+    
+    /**
+     * Parse color from string format (#RRGGBB, RRGGBB, or named colors)
+     */
+    fun parseColor(colorString: String): Int? {
+        return try {
+            when {
+                colorString.startsWith("#") -> Color.parseColor(colorString)
+                colorString.length == 6 -> Color.parseColor("#$colorString")
+                else -> parseNamedColor(colorString.lowercase())
+            }
+        } catch (e: IllegalArgumentException) {
+            null
+        }
+    }
+    
+    private fun parseNamedColor(name: String): Int? {
+        return when (name) {
+            "red" -> Color.RED
+            "green" -> Color.GREEN
+            "blue" -> Color.BLUE
+            "black" -> Color.BLACK
+            "white" -> Color.WHITE
+            "yellow" -> Color.YELLOW
+            "cyan" -> Color.CYAN
+            "magenta" -> Color.MAGENTA
+            "gray", "grey" -> Color.GRAY
+            "dkgray", "darkgray" -> Color.DKGRAY
+            "ltgray", "lightgray" -> Color.LTGRAY
+            "transparent" -> Color.TRANSPARENT
+            else -> null
+        }
+    }
+}
+
 

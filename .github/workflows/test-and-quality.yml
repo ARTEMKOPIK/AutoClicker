@@ -1,0 +1,65 @@
+name: Test & Quality Checks
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  test-and-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Generate Gradle Wrapper
+      run: gradle wrapper
+
+    - name: Run Unit Tests
+      env:
+        CRASH_BOT_TOKEN: ${{ secrets.CRASH_BOT_TOKEN }}
+        CRASH_CHAT_ID: ${{ secrets.CRASH_CHAT_ID }}
+      run: ./gradlew testDebugUnitTest
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: app/build/test-results/**/*.xml
+
+    - name: Run ktlint check
+      run: ./gradlew ktlintCheck
+
+    - name: Run detekt check
+      run: ./gradlew detekt
+
+    - name: Publish Test Report
+      uses: mikepenz/action-junit-report@v4
+      if: always()
+      with:
+        report_paths: '**/app/build/test-results/**/TEST-*.xml'
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish Detekt Report
+      uses: mikepenz/action-junit-report@v4
+      if: failure()
+      with:
+        report_paths: '**/app/build/reports/detekt/*.xml'
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        check_name: 'Detekt Static Analysis'
